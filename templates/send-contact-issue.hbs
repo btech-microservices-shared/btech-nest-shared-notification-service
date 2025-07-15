@@ -1,0 +1,45 @@
+{{#> layout}} 
+    {{#title}}
+      {{bold title}}
+    {{/title}}
+
+    {{space 30}}
+
+    {{#paragraph}}   	
+        You have received a new contact issue from the {{companyName}} contact page. Here are the details:
+    {{/paragraph}}
+
+    {{space 20}}
+
+    {{#paragraph}}
+        {{bold "Name: "}} {{name}}
+    {{/paragraph}}
+
+    {{space 15}}
+
+     {{#paragraph}}
+        {{bold "Phone: "}} {{phone}}
+    {{/paragraph}}
+
+    {{space 15}}
+
+    {{#paragraph}}
+        {{bold "Brief Issue: "}}
+    {{/paragraph}}
+
+    {{#paragraph}}
+        {{briefIssue}}
+    {{/paragraph}}
+
+    {{space 15}}
+
+    {{#paragraph}}
+        {{bold "Address: "}} {{address}}
+    {{/paragraph}} 
+
+    {{space 20}}
+
+    {{#paragraph}}
+        Please respond to the request as soon as possible.
+    {{/paragraph}}
+{{/layout}}

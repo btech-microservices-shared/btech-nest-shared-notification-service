@@ -1,0 +1,9 @@
+export interface SendContactForm {
+	to: string[]
+	fullName: string
+	phone: string
+	address: string
+	zipCode: string
+	issue: string
+	emial?: string
+}

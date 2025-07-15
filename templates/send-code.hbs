@@ -1,0 +1,36 @@
+{{#> layout}} 
+  {{#title}}
+    {{bold "Access Code for "}}{{companyName}}
+  {{/title}}
+
+  {{space 30}}
+
+  {{#paragraph}}   	
+    A login or verification code has been generated for you. Here are the details:
+  {{/paragraph}}
+
+  {{space 20}}
+
+  {{#paragraph}}
+    {{bold "Code: "}} {{code}}
+  {{/paragraph}}
+
+  {{space 15}}
+
+  {{#paragraph}}
+    {{bold "Company: "}} {{companyName}}
+  {{/paragraph}}
+
+  {{#if logoUrl}}
+    {{space 15}}
+    {{#paragraph}}
+      {{bold "Logo: "}} <img src="{{logoUrl}}" alt="Logo" style="height: 50px;" />
+    {{/paragraph}}
+  {{/if}}
+
+  {{space 20}}
+
+  {{#paragraph}}
+    Please use this code to complete your access process. If you did not request this code, you can safely ignore this message.
+  {{/paragraph}}
+{{/layout}}

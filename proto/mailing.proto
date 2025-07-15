@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package mailing;
+
+import "google/protobuf/empty.proto";
+
+service MailingService {
+  rpc SendCode(SendCodeRequest) returns (google.protobuf.Empty) {}
+}
+
+message SendCodeRequest {
+  string to = 1;
+  string code = 2;
+  string companyName = 3;
+  string logoUrl= 4;
+}

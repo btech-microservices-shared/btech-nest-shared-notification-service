@@ -1,0 +1,1 @@
+{"version":3,"file":"invalid-operation.exception.js","sourceRoot":"","sources":["../src/invalid-operation.exception.ts"],"names":[],"mappings":";;;AAAA,qDAAgD;AAEhD,MAAa,yBAA0B,SAAQ,8BAAa;IACb;IAA+B;IAA7E,YAAY,OAAgB,EAAkB,IAAa,EAAkB,IAA0B;QACtG,KAAK,CAAC,OAAO,CAAC,CAAA;QAD+B,SAAI,GAAJ,IAAI,CAAS;QAAkB,SAAI,GAAJ,IAAI,CAAsB;IAEvG,CAAC;CACD;AAJD,8DAIC"}

@@ -1,0 +1,10 @@
+export declare const isFunction: (obj: unknown) => boolean;
+export declare const isNumber: (obj: unknown) => boolean;
+export declare const isBoolean: (obj: unknown) => boolean;
+export declare const isString: (obj: unknown) => boolean;
+export declare const isUndefined: (obj: unknown) => boolean;
+export declare const isObject: (obj: unknown) => boolean;
+export declare const isDefined: (obj: unknown) => boolean;
+export declare const isNull: (obj: unknown) => boolean;
+export declare const isUnset: (obj: unknown) => boolean;
+export declare const isSet: (obj: unknown) => boolean;

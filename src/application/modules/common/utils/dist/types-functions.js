@@ -1,0 +1,24 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isSet = exports.isUnset = exports.isNull = exports.isDefined = exports.isObject = exports.isUndefined = exports.isString = exports.isBoolean = exports.isNumber = exports.isFunction = void 0;
+const isFunction = (obj) => typeof obj === 'function';
+exports.isFunction = isFunction;
+const isNumber = (obj) => typeof obj === 'number';
+exports.isNumber = isNumber;
+const isBoolean = (obj) => typeof obj === 'boolean';
+exports.isBoolean = isBoolean;
+const isString = (obj) => typeof obj === 'string';
+exports.isString = isString;
+const isUndefined = (obj) => typeof obj === 'undefined';
+exports.isUndefined = isUndefined;
+const isObject = (obj) => typeof obj === 'object';
+exports.isObject = isObject;
+const isDefined = (obj) => !(0, exports.isUndefined)(obj);
+exports.isDefined = isDefined;
+const isNull = (obj) => obj === null;
+exports.isNull = isNull;
+const isUnset = (obj) => (0, exports.isUndefined)(obj) || (0, exports.isNull)(obj);
+exports.isUnset = isUnset;
+const isSet = (obj) => !(0, exports.isUndefined)(obj) && !(0, exports.isNull)(obj);
+exports.isSet = isSet;
+//# sourceMappingURL=types-functions.js.map

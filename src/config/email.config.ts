@@ -5,17 +5,25 @@ interface EnvsVars {
   SERVER_PORT: number;
   GRPC_PORT: number;
   EMAIL_DEFAULT_PROVIDER: string;
+  EMAIL_FROM: string;
+  EMAIL_FROM_NAME: string;
   MAILTRAP_HOST: string;
   MAILTRAP_PORT: number;
   MAILTRAP_USER: string;
   MAILTRAP_PASS: string;
+  MAILERSEND_API_KEY: string;
 }
 
 const envsSchema = joi
   .object({
     SERVER_PORT: joi.number().default(3200),
     GRPC_PORT: joi.number().default(50057),
-    EMAIL_DEFAULT_PROVIDER: joi.string().valid('mailtrap').default('mailtrap'),
+    EMAIL_DEFAULT_PROVIDER: joi
+      .string()
+      .valid('mailtrap', 'mailersend')
+      .default('mailtrap'),
+    EMAIL_FROM: joi.string().email().required(),
+    EMAIL_FROM_NAME: joi.string().required(),
     MAILTRAP_HOST: joi.string().when('EMAIL_DEFAULT_PROVIDER', {
       is: 'mailtrap',
       then: joi.required(),
@@ -29,6 +37,11 @@ const envsSchema = joi
     }),
     MAILTRAP_PASS: joi.string().when('EMAIL_DEFAULT_PROVIDER', {
       is: 'mailtrap',
+      then: joi.required(),
+      otherwise: joi.optional(),
+    }),
+    MAILERSEND_API_KEY: joi.string().when('EMAIL_DEFAULT_PROVIDER', {
+      is: 'mailersend',
       then: joi.required(),
       otherwise: joi.optional(),
     }),
@@ -50,6 +63,8 @@ export const envs = {
     port: envVars.GRPC_PORT,
   },
   email: {
+    from: envVars.EMAIL_FROM,
+    fromName: envVars.EMAIL_FROM_NAME,
     providers: {
       default: envVars.EMAIL_DEFAULT_PROVIDER,
       mailtrap: {
@@ -57,6 +72,9 @@ export const envs = {
         port: envVars.MAILTRAP_PORT,
         user: envVars.MAILTRAP_USER,
         pass: envVars.MAILTRAP_PASS,
+      },
+      mailersend: {
+        apiKey: envVars.MAILERSEND_API_KEY,
       },
     },
   },

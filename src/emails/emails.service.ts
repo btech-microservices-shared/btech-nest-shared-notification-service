@@ -55,7 +55,7 @@ export class EmailsService {
     const html = buildLabReservationEmail(sendLabReservationEmailDto);
 
     const emailData: SendEmailDto = {
-      from: 'emailempresa@gmail.com',
+      from: envs.email.from,
       to: sendLabReservationEmailDto.to,
       subject: 'Confirmación de Reserva',
       html,

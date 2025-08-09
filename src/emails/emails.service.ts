@@ -21,15 +21,17 @@ export class EmailsService {
         providerName || envs.email.providers.default,
       );
       const result = await provider.sendEmail(sendEmailDto);
-      if (!result.success)
+      if (!result.success) {
+        const errorMessage = result.error || 'Error en el proveedor de email';
         throw new RpcException({
           code: GrpcSatus.INTERNAL,
-          details: {
-            stauts: HttpStatus.INTERNAL_SERVER_ERROR,
-            message: result.error || 'Error en el proveedor de email',
+          message: JSON.stringify({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: errorMessage,
             service: SERVICE_NAME,
-          },
+          }),
         });
+      }
       return {
         success: true,
         message: result.message,
@@ -41,11 +43,11 @@ export class EmailsService {
       if (error instanceof RpcException) throw error;
       throw new RpcException({
         code: GrpcSatus.INTERNAL,
-        details: {
-          stauts: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: JSON.stringify({
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
           message: errorMessage,
           service: SERVICE_NAME,
-        },
+        }),
       });
     }
   }

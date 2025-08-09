@@ -6,6 +6,9 @@ import {
   EmailProvider,
   EmailResult,
 } from '../interfaces/email-provider.interface';
+import { RpcException } from '@nestjs/microservices';
+import { handleEmailProviderError } from '../helpers/handle-email-provider-error.helper';
+import { SERVICE_NAME } from 'src/config/constants';
 
 @Injectable()
 export class MailtrapProvider implements EmailProvider {
@@ -30,13 +33,9 @@ export class MailtrapProvider implements EmailProvider {
         message: 'Email enviado exitosamente con Mailtrap',
       };
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Error desconocido';
-      return {
-        success: false,
-        message: 'Error al enviar email con Mailtrap',
-        error: errorMessage,
-      };
+      if (error instanceof RpcException) throw error;
+      // Crear y lanzar la excepción usando el helper
+      throw handleEmailProviderError(error, 'mailtrap', SERVICE_NAME);
     }
   }
 }

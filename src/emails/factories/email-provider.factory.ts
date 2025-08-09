@@ -20,15 +20,16 @@ export class EmailProviderFactory {
 
   getProvider(providerName: string): EmailProvider {
     const provider = this.providers.get(providerName);
-    if (!provider)
+    if (!provider) {
       throw new RpcException({
         code: GrpcSatus.NOT_FOUND,
-        message: {
+        message: JSON.stringify({
           status: HttpStatus.NOT_FOUND,
           message: `No se encontró el proveedor de email ${providerName}`,
           service: SERVICE_NAME,
-        },
+        }),
       });
+    }
     return provider;
   }
 

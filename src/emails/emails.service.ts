@@ -6,6 +6,7 @@ import { envs } from 'src/config/email.config';
 import { SendLabReservationEmailDto } from './dto/send-lab-reservation-email.dto';
 import { RpcException } from '@nestjs/microservices';
 import { status as GrpcSatus } from '@grpc/grpc-js';
+import { SERVICE_NAME } from '../config/constants';
 
 @Injectable()
 export class EmailsService {
@@ -26,7 +27,7 @@ export class EmailsService {
           details: {
             stauts: HttpStatus.INTERNAL_SERVER_ERROR,
             message: result.error || 'Error en el proveedor de email',
-            service: 'emails-service',
+            service: SERVICE_NAME,
           },
         });
       return {
@@ -43,7 +44,7 @@ export class EmailsService {
         details: {
           stauts: HttpStatus.INTERNAL_SERVER_ERROR,
           message: errorMessage,
-          service: 'emails-service',
+          service: SERVICE_NAME,
         },
       });
     }

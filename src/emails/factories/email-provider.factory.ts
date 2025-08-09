@@ -3,6 +3,8 @@ import { EmailProvider } from '../interfaces/email-provider.interface';
 import { MailtrapProvider } from '../providers/mailtrap.provider';
 import { RpcException } from '@nestjs/microservices';
 import { MailerSendProvider } from '../providers/mailersend.provider';
+import { status as GrpcSatus } from '@grpc/grpc-js';
+import { SERVICE_NAME } from 'src/config/constants';
 
 @Injectable()
 export class EmailProviderFactory {
@@ -20,8 +22,12 @@ export class EmailProviderFactory {
     const provider = this.providers.get(providerName);
     if (!provider)
       throw new RpcException({
-        status: HttpStatus.NOT_FOUND,
-        message: `El proveedor ${providerName} no existe. Proveedores disponibles: ${Array.from(this.providers.keys()).join(', ')}`,
+        code: GrpcSatus.NOT_FOUND,
+        message: {
+          status: HttpStatus.NOT_FOUND,
+          message: `No se encontró el proveedor de email ${providerName}`,
+          service: SERVICE_NAME,
+        },
       });
     return provider;
   }

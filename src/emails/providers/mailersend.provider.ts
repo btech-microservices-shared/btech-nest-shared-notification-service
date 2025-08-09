@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 import { envs } from 'src/config/email.config';
 import {
@@ -6,6 +6,9 @@ import {
   EmailProvider,
   EmailResult,
 } from '../interfaces/email-provider.interface';
+import { RpcException } from '@nestjs/microservices';
+import { status as GrpcSatus } from '@grpc/grpc-js';
+import { SERVICE_NAME } from 'src/config/constants';
 
 @Injectable()
 export class MailerSendProvider implements EmailProvider {
@@ -50,14 +53,17 @@ export class MailerSendProvider implements EmailProvider {
         message: 'Email enviado exitosamente con MailerSend',
       };
     } catch (error) {
-      console.error('MailerSend Error:', error);
+      if (error instanceof RpcException) throw error;
       const errorMessage =
         error instanceof Error ? error.message : 'Error desconocido';
-      return {
-        success: false,
-        message: 'Error al enviar email con MailerSend',
-        error: errorMessage,
-      };
+      throw new RpcException({
+        code: GrpcSatus.INTERNAL,
+        message: {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: errorMessage,
+          service: SERVICE_NAME,
+        },
+      });
     }
   }
 }

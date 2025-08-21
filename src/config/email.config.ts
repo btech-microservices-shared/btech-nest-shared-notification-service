@@ -12,6 +12,15 @@ interface EnvsVars {
   MAILTRAP_USER: string;
   MAILTRAP_PASS: string;
   MAILERSEND_API_KEY: string;
+  OFFICE365_HOST: string;
+  OFFICE365_PORT: number;
+  OFFICE365_SECURE: boolean;
+  OFFICE365_REQUIRE_TLS: boolean;
+  OFFICE365_USER: string;
+  OFFICE365_PASS: string;
+  OFFICE365_SECURITY: string;
+  OFFICE365_TLS_CIPHERS: string;
+  OFFICE365_TLS_REJECT_UNAUTHORIZED: boolean;
 }
 
 const envsSchema = joi
@@ -20,8 +29,8 @@ const envsSchema = joi
     GRPC_PORT: joi.number().default(50057),
     EMAIL_DEFAULT_PROVIDER: joi
       .string()
-      .valid('mailtrap', 'mailersend')
-      .default('mailtrap'),
+      .valid('mailtrap', 'mailersend', 'office365')
+      .default('office365'),
     EMAIL_FROM: joi.string().email().required(),
     EMAIL_FROM_NAME: joi.string().required(),
     MAILTRAP_HOST: joi.string().when('EMAIL_DEFAULT_PROVIDER', {
@@ -45,6 +54,53 @@ const envsSchema = joi
       then: joi.required(),
       otherwise: joi.optional(),
     }),
+    OFFICE365_HOST: joi.string().when('EMAIL_DEFAULT_PROVIDER', {
+      is: 'office365',
+      then: joi.required(),
+      otherwise: joi.optional(),
+    }),
+    OFFICE365_PORT: joi.number().when('EMAIL_DEFAULT_PROVIDER', {
+      is: 'office365',
+      then: joi.required(),
+      otherwise: joi.optional(),
+    }),
+    OFFICE365_SECURE: joi.boolean().when('EMAIL_DEFAULT_PROVIDER', {
+      is: 'office365',
+      then: joi.required(),
+      otherwise: joi.optional(),
+    }),
+    OFFICE365_REQUIRE_TLS: joi.boolean().when('EMAIL_DEFAULT_PROVIDER', {
+      is: 'office365',
+      then: joi.required(),
+      otherwise: joi.optional(),
+    }),
+    OFFICE365_USER: joi.string().when('EMAIL_DEFAULT_PROVIDER', {
+      is: 'office365',
+      then: joi.required(),
+      otherwise: joi.optional(),
+    }),
+    OFFICE365_PASS: joi.string().when('EMAIL_DEFAULT_PROVIDER', {
+      is: 'office365',
+      then: joi.required(),
+      otherwise: joi.optional(),
+    }),
+    OFFICE365_SECURITY: joi.string().when('EMAIL_DEFAULT_PROVIDER', {
+      is: 'office365',
+      then: joi.required(),
+      otherwise: joi.optional(),
+    }),
+    OFFICE365_TLS_CIPHERS: joi.string().when('EMAIL_DEFAULT_PROVIDER', {
+      is: 'office365',
+      then: joi.required(),
+      otherwise: joi.optional(),
+    }),
+    OFFICE365_TLS_REJECT_UNAUTHORIZED: joi
+      .boolean()
+      .when('EMAIL_DEFAULT_PROVIDER', {
+        is: 'office365',
+        then: joi.required(),
+        otherwise: joi.optional(),
+      }),
   })
   .unknown(true);
 
@@ -75,6 +131,17 @@ export const envs = {
       },
       mailersend: {
         apiKey: envVars.MAILERSEND_API_KEY,
+      },
+      office365: {
+        host: envVars.OFFICE365_HOST,
+        port: envVars.OFFICE365_PORT,
+        secure: envVars.OFFICE365_SECURE,
+        requireTLS: envVars.OFFICE365_REQUIRE_TLS,
+        user: envVars.OFFICE365_USER,
+        pass: envVars.OFFICE365_PASS,
+        security: envVars.OFFICE365_SECURITY,
+        tlsCiphers: envVars.OFFICE365_TLS_CIPHERS,
+        tlsRejectUnauthorized: envVars.OFFICE365_TLS_REJECT_UNAUTHORIZED,
       },
     },
   },

@@ -7,7 +7,7 @@ import { EmailErrorResponse } from 'src/common/interfaces/email-error-response.i
 
 export const handleEmailProviderError = (
   error: any,
-  providerType: 'mailersend' | 'mailtrap' | 'generic',
+  providerType: 'mailersend' | 'mailtrap' | 'generic' | 'office365',
   serviceName: string,
 ): RpcException => {
   let errorResult: EmailErrorResponse;

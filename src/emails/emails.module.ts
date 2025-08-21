@@ -4,6 +4,7 @@ import { EmailsController } from './emails.controller';
 import { EmailProviderFactory } from './factories/email-provider.factory';
 import { MailtrapProvider } from './providers/mailtrap.provider';
 import { MailerSendProvider } from './providers/mailersend.provider';
+import { Office365Provider } from './providers/office365.provider';
 
 @Module({
   controllers: [EmailsController],
@@ -12,6 +13,7 @@ import { MailerSendProvider } from './providers/mailersend.provider';
     EmailProviderFactory,
     MailtrapProvider,
     MailerSendProvider,
+    Office365Provider,
   ],
 })
 export class EmailsModule {}

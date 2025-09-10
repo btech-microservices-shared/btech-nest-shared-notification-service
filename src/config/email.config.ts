@@ -18,7 +18,6 @@ interface EnvsVars {
   OFFICE365_REQUIRE_TLS: boolean;
   OFFICE365_USER: string;
   OFFICE365_PASS: string;
-  OFFICE365_SECURITY: string;
   OFFICE365_TLS_CIPHERS: string;
   OFFICE365_TLS_REJECT_UNAUTHORIZED: boolean;
 }
@@ -84,23 +83,6 @@ const envsSchema = joi
       then: joi.required(),
       otherwise: joi.optional(),
     }),
-    OFFICE365_SECURITY: joi.string().when('EMAIL_DEFAULT_PROVIDER', {
-      is: 'office365',
-      then: joi.required(),
-      otherwise: joi.optional(),
-    }),
-    OFFICE365_TLS_CIPHERS: joi.string().when('EMAIL_DEFAULT_PROVIDER', {
-      is: 'office365',
-      then: joi.required(),
-      otherwise: joi.optional(),
-    }),
-    OFFICE365_TLS_REJECT_UNAUTHORIZED: joi
-      .boolean()
-      .when('EMAIL_DEFAULT_PROVIDER', {
-        is: 'office365',
-        then: joi.required(),
-        otherwise: joi.optional(),
-      }),
   })
   .unknown(true);
 
@@ -139,9 +121,6 @@ export const envs = {
         requireTLS: envVars.OFFICE365_REQUIRE_TLS,
         user: envVars.OFFICE365_USER,
         pass: envVars.OFFICE365_PASS,
-        security: envVars.OFFICE365_SECURITY,
-        tlsCiphers: envVars.OFFICE365_TLS_CIPHERS,
-        tlsRejectUnauthorized: envVars.OFFICE365_TLS_REJECT_UNAUTHORIZED,
       },
     },
   },

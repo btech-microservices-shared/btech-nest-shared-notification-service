@@ -4,8 +4,6 @@ import { MailtrapProvider } from '../providers/mailtrap.provider';
 import { RpcException } from '@nestjs/microservices';
 import { MailerSendProvider } from '../providers/mailersend.provider';
 import { Office365Provider } from '../providers/office365.provider';
-import { status as GrpcSatus } from '@grpc/grpc-js';
-import { SERVICE_NAME } from 'src/config/constants';
 
 @Injectable()
 export class EmailProviderFactory {
@@ -25,12 +23,8 @@ export class EmailProviderFactory {
     const provider = this.providers.get(providerName);
     if (!provider) {
       throw new RpcException({
-        code: GrpcSatus.NOT_FOUND,
-        message: JSON.stringify({
-          status: HttpStatus.NOT_FOUND,
-          message: `No se encontró el proveedor de email ${providerName}`,
-          service: SERVICE_NAME,
-        }),
+        status: HttpStatus.NOT_FOUND,
+        message: `No se encontró el proveedor de email ${providerName}`,
       });
     }
     return provider;

@@ -9,41 +9,57 @@ export const buildLabReservationEmail = (params: {
     startTime: string;
     endTime: string;
     date: string;
+    metadata: Record<string, any>;
   }>;
   primaryColor: string;
 }): string => {
-  const firstDetail = params.details[0];
-  const remainingCount = params.details.length - 1;
+  const detailsHtml = params.details
+    .map((detail) => {
+      const { username, password, accessUrl } = detail.metadata;
 
-  const detailHtml = `
-    <div style="
-      position: relative;
-      margin-bottom: 15px;
-      padding: 12px;
-      border-left: 4px solid ${params.primaryColor};
-      background: #f8f9fa;
-    ">
-      <h3 style="margin: 0 0 5px 0; color: ${params.primaryColor};">${firstDetail.labDescription}</h3>
-      <p><strong>Equipo:</strong> ${firstDetail.equipmentDescription}</p>
-      <p><strong>Fecha:</strong> ${firstDetail.date}</p>
-      <p><strong>Horario:</strong> ${firstDetail.startTime} - ${firstDetail.endTime}</p>
-      
-      ${
-        remainingCount > 0
-          ? `<span style="
-              position: absolute;
-              bottom: 8px;
-              right: 12px;
-              background: ${params.primaryColor};
-              color: white;
-              padding: 2px 8px;
-              border-radius: 12px;
-              font-size: 12px;
-            ">+${remainingCount}</span>`
-          : ''
-      }
-    </div>
-  `;
+      return `
+      <div style="
+        margin-bottom: 12px;
+        padding: 10px;
+        border-left: 4px solid ${params.primaryColor};
+        background: #f8f9fa;
+        border-radius: 0 6px 6px 0;
+      ">
+        <h3 style="margin: 0 0 8px 0; color: ${params.primaryColor}; font-size: 16px;">${detail.labDescription}</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+          <p style="margin: 0; font-size: 14px;"><strong>Equipo:</strong> ${detail.equipmentDescription}</p>
+          <p style="margin: 0; font-size: 14px;"><strong>Fecha:</strong> ${detail.date}</p>
+          <p style="margin: 0; font-size: 14px;"><strong>Horario:</strong> ${detail.startTime} - ${detail.endTime}</p>
+        </div>
+
+        <!-- Credenciales de acceso -->
+        <div style="
+          background: #ffffff;
+          border: 1px solid #e9ecef;
+          border-radius: 4px;
+          padding: 8px;
+          margin-top: 8px;
+        ">
+          <h4 style="margin: 0 0 6px 0; color: ${params.primaryColor}; font-size: 14px;">Credenciales de Acceso</h4>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 13px;">
+            <p style="margin: 0;"><strong>Usuario:</strong> ${username || 'N/A'}</p>
+            <p style="margin: 0;"><strong>Contraseña:</strong> ${password || 'N/A'}</p>
+          </div>
+          ${
+            accessUrl
+              ? `
+            <p style="margin: 6px 0 0 0; font-size: 13px;">
+              <strong>URL de Acceso:</strong>
+              <a href="${accessUrl}" style="color: ${params.primaryColor}; text-decoration: none;" target="_blank">${accessUrl}</a>
+            </p>
+          `
+              : ''
+          }
+        </div>
+      </div>
+    `;
+    })
+    .join('');
 
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -57,8 +73,8 @@ export const buildLabReservationEmail = (params: {
       <p>Hola <strong>${params.userName}</strong>,</p>
       <p>Tu reserva en <strong>${params.companyName}</strong> realizada el día <strong>${params.reservationDate}</strong> ha sido confirmada:</p>
 
-      <!-- Detalle principal con contador -->
-      ${detailHtml}
+      <!-- Todas las reservas -->
+      ${detailsHtml}
 
       <!-- Pie -->
       <div style="margin-top: 25px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 12px; color: #777;">

@@ -4,6 +4,7 @@ import {
   IsArray,
   ValidateNested,
   IsNotEmpty,
+  IsObject,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -66,4 +67,8 @@ export class SendLabReservationEmailDetailsDto {
   @IsString({ message: 'La fecha debe ser una cadena de texto' })
   @IsNotEmpty({ message: 'La fecha es obligatoria' })
   date: string;
+
+  @IsObject({ message: 'Los metadatos deben ser un objeto' })
+  @IsNotEmpty({ message: 'Los metadatos son obligatorios' })
+  metadata: Record<string, any>;
 }

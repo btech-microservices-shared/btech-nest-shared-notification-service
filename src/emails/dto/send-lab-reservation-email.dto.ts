@@ -5,6 +5,7 @@ import {
   ValidateNested,
   IsNotEmpty,
   IsObject,
+  IsUUID,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -41,6 +42,12 @@ export class SendLabReservationEmailDto {
   @IsString({ message: 'El color primario debe ser una cadena de texto' })
   @IsNotEmpty({ message: 'El color primario es obligatorio' })
   primaryColor: string;
+
+  @IsUUID('4', {
+    message: 'El subscriptionDetailId debe ser un UUID válido',
+  })
+  @IsNotEmpty({ message: 'El subscriptionDetailId es obligatorio' })
+  subscriptionDetailId: string;
 }
 
 export class SendLabReservationEmailDetailsDto {

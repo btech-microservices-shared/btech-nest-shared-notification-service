@@ -1,5 +1,5 @@
 export interface EmailProvider {
-  sendEmail(emailData: EmailData): Promise<EmailResult>;
+  sendEmail(emailData: EmailData, config?: any): Promise<EmailResult>;
 }
 
 export interface EmailData {

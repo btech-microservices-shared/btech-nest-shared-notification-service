@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { EmailsModule } from './emails/emails.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { databaseConfig } from './config/database.config';
 
 @Module({
-  imports: [EmailsModule],
+  imports: [TypeOrmModule.forRoot(databaseConfig), EmailsModule],
 })
 export class AppModule {}

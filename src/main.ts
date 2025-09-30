@@ -2,12 +2,12 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'path';
-import { envs } from './config/email.config';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { createValidationExceptionFactory } from './common/factories/create-validation-exception.factory';
 import { SERVICE_NAME } from './config/constants';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { ServiceExceptionFilter } from './common/filters/service-exception.filter';
+import { envs } from './config/env.config';
 
 async function bootstrap() {
   const logger = new Logger(SERVICE_NAME);

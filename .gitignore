@@ -3,6 +3,7 @@
 /node_modules
 /build
 CLAUDE.md
+mysql
 
 # Logs
 logs

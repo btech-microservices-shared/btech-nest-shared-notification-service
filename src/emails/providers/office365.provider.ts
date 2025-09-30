@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
-import { envs } from 'src/config/email.config';
 import {
   EmailData,
   EmailProvider,
@@ -9,6 +8,7 @@ import {
 import { RpcException } from '@nestjs/microservices';
 import { handleEmailProviderError } from '../helpers/handle-email-provider-error.helper';
 import { SERVICE_NAME } from 'src/config/constants';
+import { envs } from 'src/config/env.config';
 
 @Injectable()
 export class Office365Provider implements EmailProvider {

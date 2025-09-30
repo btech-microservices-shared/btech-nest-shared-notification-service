@@ -12,6 +12,19 @@ services:
       - "50057:50057"  # Puerto gRPC
     restart: unless-stopped
 
+  email-db:
+    image: mysql:8.0
+    container_name: email-db
+    environment:
+      MYSQL_DATABASE: email-db
+      MYSQL_ROOT_PASSWORD: 123456
+      TZ: America/Lima
+    ports:
+      - "3351:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
+    restart: unless-stopped
+
 networks:
   default:
     driver: bridge

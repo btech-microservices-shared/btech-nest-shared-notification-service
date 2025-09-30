@@ -4,55 +4,39 @@ import * as joi from 'joi';
 interface EnvsVars {
   SERVER_PORT: number;
   GRPC_PORT: number;
+  DB_HOST: string;
+  DB_PORT: number;
+  DB_NAME: string;
+  DB_USERNAME: string;
+  DB_PASSWORD: string;
+  DB_SYNCHRONIZE: boolean;
   EMAIL_DEFAULT_PROVIDER: string;
   EMAIL_FROM: string;
   EMAIL_FROM_NAME: string;
-  MAILTRAP_HOST: string;
-  MAILTRAP_PORT: number;
-  MAILTRAP_USER: string;
-  MAILTRAP_PASS: string;
-  MAILERSEND_API_KEY: string;
   OFFICE365_HOST: string;
   OFFICE365_PORT: number;
   OFFICE365_SECURE: boolean;
   OFFICE365_REQUIRE_TLS: boolean;
   OFFICE365_USER: string;
   OFFICE365_PASS: string;
-  OFFICE365_TLS_CIPHERS: string;
-  OFFICE365_TLS_REJECT_UNAUTHORIZED: boolean;
 }
 
 const envsSchema = joi
   .object({
     SERVER_PORT: joi.number().default(3200),
     GRPC_PORT: joi.number().default(50057),
+    DB_HOST: joi.string().required(),
+    DB_PORT: joi.number().default(3306),
+    DB_NAME: joi.string().required(),
+    DB_USERNAME: joi.string().required(),
+    DB_PASSWORD: joi.string().allow(''),
+    DB_SYNCHRONIZE: joi.boolean().default(true),
     EMAIL_DEFAULT_PROVIDER: joi
       .string()
       .valid('mailtrap', 'mailersend', 'office365')
       .default('office365'),
     EMAIL_FROM: joi.string().email().required(),
     EMAIL_FROM_NAME: joi.string().required(),
-    MAILTRAP_HOST: joi.string().when('EMAIL_DEFAULT_PROVIDER', {
-      is: 'mailtrap',
-      then: joi.required(),
-      otherwise: joi.optional(),
-    }),
-    MAILTRAP_PORT: joi.number().default(2525),
-    MAILTRAP_USER: joi.string().when('EMAIL_DEFAULT_PROVIDER', {
-      is: 'mailtrap',
-      then: joi.required(),
-      otherwise: joi.optional(),
-    }),
-    MAILTRAP_PASS: joi.string().when('EMAIL_DEFAULT_PROVIDER', {
-      is: 'mailtrap',
-      then: joi.required(),
-      otherwise: joi.optional(),
-    }),
-    MAILERSEND_API_KEY: joi.string().when('EMAIL_DEFAULT_PROVIDER', {
-      is: 'mailersend',
-      then: joi.required(),
-      otherwise: joi.optional(),
-    }),
     OFFICE365_HOST: joi.string().when('EMAIL_DEFAULT_PROVIDER', {
       is: 'office365',
       then: joi.required(),
@@ -105,15 +89,6 @@ export const envs = {
     fromName: envVars.EMAIL_FROM_NAME,
     providers: {
       default: envVars.EMAIL_DEFAULT_PROVIDER,
-      mailtrap: {
-        host: envVars.MAILTRAP_HOST,
-        port: envVars.MAILTRAP_PORT,
-        user: envVars.MAILTRAP_USER,
-        pass: envVars.MAILTRAP_PASS,
-      },
-      mailersend: {
-        apiKey: envVars.MAILERSEND_API_KEY,
-      },
       office365: {
         host: envVars.OFFICE365_HOST,
         port: envVars.OFFICE365_PORT,
@@ -123,5 +98,13 @@ export const envs = {
         pass: envVars.OFFICE365_PASS,
       },
     },
+  },
+  database: {
+    host: envVars.DB_HOST,
+    port: envVars.DB_PORT,
+    name: envVars.DB_NAME,
+    username: envVars.DB_USERNAME,
+    password: envVars.DB_PASSWORD,
+    synchronize: envVars.DB_SYNCHRONIZE,
   },
 };

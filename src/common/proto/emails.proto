@@ -4,6 +4,7 @@ package emails;
 
 service EmailsService {
   rpc SendLabReservationEmail(SendLabReservationEmailRequest) returns (SendEmailResponse);
+  rpc SendSupportTicketsEmail(SendSupportTicketsEmailRequest) returns (SendEmailResponse);
 }
 
 message SendLabReservationEmailRequest {
@@ -36,4 +37,20 @@ message SendEmailResponse {
   bool success = 1;
   string message = 2;
   string error = 3;
+}
+
+message SendSupportTicketsEmailRequest {
+  string to = 1;
+  string companyName = 2;
+  string logoUrl = 3;
+  string userName = 4;
+  string ticketNumber = 5;
+  string title = 6;
+  string description = 7;
+  string priority = 8;
+  string statusCode = 9;
+  string type = 10;
+  string category = 11;
+  string createdDate = 12;
+  string primaryColor = 13;
 }

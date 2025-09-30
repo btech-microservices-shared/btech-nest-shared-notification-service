@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package audit;
+
+service AuditService {
+  rpc CreateAuditLog(CreateAuditLogRequest) returns (CreateAuditLogResponse);
+}
+
+message CreateAuditLogRequest {
+  string serviceName = 1;
+  string projectName = 2;
+  string method = 3;
+  string route = 4;
+  string userId = 5;
+  string ipAddress = 6;
+  string userAgent = 7;
+  string requestBody = 8;
+  string responseBody = 9;
+  int32 statusCode = 10;
+  string errorMessage = 11;
+  int32 responseTimeMs = 12;
+  map<string, string> metadata = 13;
+  string sessionId = 14;
+  string traceId = 15;
+}
+
+message CreateAuditLogResponse {
+  string id = 1;
+  bool success = 2;
+  string message = 3;
+}

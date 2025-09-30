@@ -38,6 +38,9 @@ export class EmailServerConfig {
   @Column({ type: 'varchar', length: 255, nullable: true })
   fromName: string;
 
+  @Column({ type: 'text', nullable: true })
+  logoUrl: string;
+
   @Column({ type: 'boolean', default: true })
   isActive: boolean;
 

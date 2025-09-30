@@ -73,7 +73,16 @@ export class EmailsService {
   async sendLabReservationEmail(
     sendLabReservationEmailDto: SendLabReservationEmailDto,
   ): Promise<SendEmailResponseDto> {
-    const html = buildLabReservationEmail(sendLabReservationEmailDto);
+    // Obtener la configuración del tenant para verificar si tiene logo personalizado
+    const { config } = await this.emailProviderFactory.getProviderForTenant(
+      sendLabReservationEmailDto.subscriptionDetailId,
+    );
+    const logoUrl = config?.logoUrl || sendLabReservationEmailDto.logoUrl;
+
+    const html = buildLabReservationEmail({
+      ...sendLabReservationEmailDto,
+      logoUrl,
+    });
     const emailData: SendEmailDto = {
       from: `${envs.email.fromName} <${envs.email.from}>`,
       to: sendLabReservationEmailDto.to,

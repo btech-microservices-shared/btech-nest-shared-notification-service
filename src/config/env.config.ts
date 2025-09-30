@@ -19,6 +19,8 @@ interface EnvsVars {
   OFFICE365_REQUIRE_TLS: boolean;
   OFFICE365_USER: string;
   OFFICE365_PASS: string;
+  AUDIT_LOGS_GRPC_URL: string;
+  AUDIT_TIMEOUT: number;
 }
 
 const envsSchema = joi
@@ -67,6 +69,8 @@ const envsSchema = joi
       then: joi.required(),
       otherwise: joi.optional(),
     }),
+    AUDIT_LOGS_GRPC_URL: joi.string().required(),
+    AUDIT_TIMEOUT: joi.number().required(),
   })
   .unknown(true);
 
@@ -106,5 +110,9 @@ export const envs = {
     username: envVars.DB_USERNAME,
     password: envVars.DB_PASSWORD,
     synchronize: envVars.DB_SYNCHRONIZE,
+  },
+  audit: {
+    url: envVars.AUDIT_LOGS_GRPC_URL,
+    timeout: envVars.AUDIT_TIMEOUT,
   },
 };

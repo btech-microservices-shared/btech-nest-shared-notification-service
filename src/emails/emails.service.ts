@@ -8,6 +8,8 @@ import { SendLabReservationEmailDto } from './dto/send-lab-reservation-email.dto
 import { RpcException } from '@nestjs/microservices';
 import { envs } from 'src/config/env.config';
 import { DynamicSmtpProvider } from './providers/dynamic-smtp.provider';
+import { SendSupportTicketsEmailDto } from './dto/send-support-tickets-email.dto';
+import { buildSupportTicketsEmail } from './templates/build-support-tickets-email.template';
 
 @Injectable()
 export class EmailsService {
@@ -81,6 +83,24 @@ export class EmailsService {
     return this.sendEmail(
       emailData,
       sendLabReservationEmailDto.subscriptionDetailId,
+    );
+  }
+
+  sendSupportTicketsEmail(
+    sendSupportTicketsEmailDto: SendSupportTicketsEmailDto,
+  ): Promise<SendEmailResponseDto> {
+    const html = buildSupportTicketsEmail(sendSupportTicketsEmailDto);
+    const subject = `[Nuevo Ticket] #${sendSupportTicketsEmailDto.ticketNumber} - ${sendSupportTicketsEmailDto.title}`;
+
+    const emailData: SendEmailDto = {
+      from: `${envs.email.fromName} <${envs.email.from}>`,
+      to: sendSupportTicketsEmailDto.to,
+      subject,
+      html,
+    };
+    return this.sendEmail(
+      emailData,
+      sendSupportTicketsEmailDto.subscriptionDetailId,
     );
   }
 }

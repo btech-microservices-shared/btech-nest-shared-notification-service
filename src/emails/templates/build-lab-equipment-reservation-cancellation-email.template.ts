@@ -16,7 +16,7 @@ export const buildLabEquipmentReservationCancellationEmail = (params: {
       <!-- Encabezado -->
       <div style="text-align: center; margin-bottom: 20px;">
         <img src="${params.logoUrl}" alt="${params.companyName}" style="max-width: 200px;">
-        <h1 style="color: #dc3545;">Cancelación de Reserva de Laboratorio</h1>
+        <h1 style="color: ${params.primaryColor};">Cancelación de Reserva de Laboratorio</h1>
       </div>
 
       <!-- Saludo -->

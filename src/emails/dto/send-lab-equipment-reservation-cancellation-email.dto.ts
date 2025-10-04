@@ -8,52 +8,6 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class SendLabEquipmentReservationCancellationEmailDto {
-  @IsUUID('4', {
-    message: 'El reservationLaboratoryEquipmentId debe ser un UUID válido',
-  })
-  @IsNotEmpty({
-    message: 'El reservationLaboratoryEquipmentId es obligatorio',
-  })
-  reservationLaboratoryEquipmentId: string;
-
-  @IsObject({ message: 'Los metadatos deben ser un objeto' })
-  @IsNotEmpty({ message: 'Los metadatos son obligatorios' })
-  @ValidateNested()
-  @Type(() => EmailNotificationMetadataDto)
-  metadata: EmailNotificationMetadataDto;
-
-  @IsUUID('4', {
-    message: 'El subscriptionDetailId debe ser un UUID válido',
-  })
-  @IsNotEmpty({ message: 'El subscriptionDetailId es obligatorio' })
-  subscriptionDetailId: string;
-}
-
-export class EmailNotificationMetadataDto {
-  @IsString({ message: 'La contraseña debe ser una cadena de texto' })
-  @IsNotEmpty({ message: 'La contraseña es obligatoria' })
-  password: string;
-
-  @IsString({ message: 'El nombre de usuario debe ser una cadena de texto' })
-  @IsNotEmpty({ message: 'El nombre de usuario es obligatorio' })
-  username: string;
-
-  @IsString({ message: 'La URL de acceso debe ser una cadena de texto' })
-  @IsNotEmpty({ message: 'La URL de acceso es obligatoria' })
-  accessUrl: string;
-
-  @IsObject({
-    message: 'Los datos de notificación de email deben ser un objeto',
-  })
-  @IsNotEmpty({
-    message: 'Los datos de notificación de email son obligatorios',
-  })
-  @ValidateNested()
-  @Type(() => EmailNotificationDataDto)
-  emailNotificationData: EmailNotificationDataDto;
-}
-
 export class EmailNotificationDataDto {
   @IsString({ message: 'La URL del logo debe ser una cadena de texto' })
   @IsNotEmpty({ message: 'La URL del logo es obligatoria' })
@@ -102,4 +56,50 @@ export class EmailNotificationDataDto {
     message: 'El correo electrónico del suscriptor es obligatorio',
   })
   subscriberEmail: string;
+}
+
+export class EmailNotificationMetadataDto {
+  @IsString({ message: 'La contraseña debe ser una cadena de texto' })
+  @IsNotEmpty({ message: 'La contraseña es obligatoria' })
+  password: string;
+
+  @IsString({ message: 'El nombre de usuario debe ser una cadena de texto' })
+  @IsNotEmpty({ message: 'El nombre de usuario es obligatorio' })
+  username: string;
+
+  @IsString({ message: 'La URL de acceso debe ser una cadena de texto' })
+  @IsNotEmpty({ message: 'La URL de acceso es obligatoria' })
+  accessUrl: string;
+
+  @IsObject({
+    message: 'Los datos de notificación de email deben ser un objeto',
+  })
+  @IsNotEmpty({
+    message: 'Los datos de notificación de email son obligatorios',
+  })
+  @ValidateNested()
+  @Type(() => EmailNotificationDataDto)
+  emailNotificationData: EmailNotificationDataDto;
+}
+
+export class SendLabEquipmentReservationCancellationEmailDto {
+  @IsUUID('4', {
+    message: 'El reservationLaboratoryEquipmentId debe ser un UUID válido',
+  })
+  @IsNotEmpty({
+    message: 'El reservationLaboratoryEquipmentId es obligatorio',
+  })
+  reservationLaboratoryEquipmentId: string;
+
+  @IsObject({ message: 'Los metadatos deben ser un objeto' })
+  @IsNotEmpty({ message: 'Los metadatos son obligatorios' })
+  @ValidateNested()
+  @Type(() => EmailNotificationMetadataDto)
+  metadata: EmailNotificationMetadataDto;
+
+  @IsUUID('4', {
+    message: 'El subscriptionDetailId debe ser un UUID válido',
+  })
+  @IsNotEmpty({ message: 'El subscriptionDetailId es obligatorio' })
+  subscriptionDetailId: string;
 }

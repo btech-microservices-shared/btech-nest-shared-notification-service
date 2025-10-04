@@ -10,6 +10,8 @@ import { envs } from 'src/config/env.config';
 import { DynamicSmtpProvider } from './providers/dynamic-smtp.provider';
 import { SendSupportTicketsEmailDto } from './dto/send-support-tickets-email.dto';
 import { buildSupportTicketsEmail } from './templates/build-support-tickets-email.template';
+import { SendLabEquipmentReservationCancellationEmailDto } from './dto/send-lab-equipment-reservation-cancellation-email.dto';
+import { buildLabEquipmentReservationCancellationEmail } from './templates/build-lab-equipment-reservation-cancellation-email.template';
 
 @Injectable()
 export class EmailsService {
@@ -78,7 +80,6 @@ export class EmailsService {
       sendLabReservationEmailDto.subscriptionDetailId,
     );
     const logoUrl = config?.logoUrl || sendLabReservationEmailDto.logoUrl;
-
     const html = buildLabReservationEmail({
       ...sendLabReservationEmailDto,
       logoUrl,
@@ -111,5 +112,41 @@ export class EmailsService {
       emailData,
       sendSupportTicketsEmailDto.subscriptionDetailId,
     );
+  }
+
+  async sendLabEquipmentReservationCancellationEmail(
+    dto: SendLabEquipmentReservationCancellationEmailDto,
+  ): Promise<SendEmailResponseDto> {
+    // Obtener la configuración del tenant para verificar si tiene logo personalizado
+    const { config } = await this.emailProviderFactory.getProviderForTenant(
+      dto.subscriptionDetailId,
+    );
+    const logoUrl =
+      dto.metadata.emailNotificationData.logoUrl || config?.logoUrl;
+    if (!logoUrl)
+      throw new RpcException({
+        status: HttpStatus.BAD_REQUEST,
+        message: 'No se encontró un logo válido para enviar el correo',
+      });
+    const html = buildLabEquipmentReservationCancellationEmail({
+      logoUrl,
+      companyName: dto.metadata.emailNotificationData.companyName,
+      subscriberName: dto.metadata.emailNotificationData.subscriberName,
+      laboratoryName: dto.metadata.emailNotificationData.laboratoryName,
+      reservationDate: dto.metadata.emailNotificationData.reservationDate,
+      initialHour: dto.metadata.emailNotificationData.initialHour,
+      finalHour: dto.metadata.emailNotificationData.finalHour,
+      primaryColor: dto.metadata.emailNotificationData.primaryColor,
+      username: dto.metadata.username,
+      password: dto.metadata.password,
+      accessUrl: dto.metadata.accessUrl,
+    });
+    const emailData: SendEmailDto = {
+      from: `${envs.email.fromName} <${envs.email.from}>`,
+      to: dto.metadata.emailNotificationData.subscriberEmail,
+      subject: 'Cancelación de Reserva de Equipo de Laboratorio',
+      html,
+    };
+    return this.sendEmail(emailData, dto.subscriptionDetailId);
   }
 }

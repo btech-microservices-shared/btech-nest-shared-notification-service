@@ -5,6 +5,7 @@ package emails;
 service EmailsService {
   rpc SendLabReservationEmail(SendLabReservationEmailRequest) returns (SendEmailResponse);
   rpc SendSupportTicketsEmail(SendSupportTicketsEmailRequest) returns (SendEmailResponse);
+  rpc SendLabEquipmentReservationCancellationEmail(SendLabEquipmentReservationCancellationEmailRequest) returns (SendEmailResponse);
 }
 
 message SendLabReservationEmailRequest {
@@ -53,4 +54,29 @@ message SendSupportTicketsEmailRequest {
   string category = 11;
   string createdDate = 12;
   string primaryColor = 13;
+}
+
+message SendLabEquipmentReservationCancellationEmailRequest {
+  string reservationLaboratoryEquipmentId = 1;
+  EmailNotificationMetadata metadata = 2;
+  string subscriptionDetailId = 3;
+}
+
+message EmailNotificationMetadata {
+  string password = 1;
+  string username = 2;
+  string accessUrl = 3;
+  EmailNotificationData emailNotificationData = 4;
+}
+
+message EmailNotificationData {
+  string logoUrl = 1;
+  string finalHour = 2;
+  string companyName = 3;
+  string initialHour = 4;
+  string primaryColor = 5;
+  string laboratoryName = 6;
+  string subscriberName = 7;
+  string reservationDate = 8;
+  string subscriberEmail = 9;
 }

@@ -12,6 +12,8 @@ import { SendSupportTicketsEmailDto } from './dto/send-support-tickets-email.dto
 import { buildSupportTicketsEmail } from './templates/build-support-tickets-email.template';
 import { SendLabEquipmentReservationCancellationEmailDto } from './dto/send-lab-equipment-reservation-cancellation-email.dto';
 import { buildLabEquipmentReservationCancellationEmail } from './templates/build-lab-equipment-reservation-cancellation-email.template';
+import { SendPasswordRecoveryEmailDto } from './dto/send-password-recovery-email.dto';
+import { buildPasswordRecoveryEmail } from './templates/build-password-recovery-email.template';
 
 @Injectable()
 export class EmailsService {
@@ -148,5 +150,36 @@ export class EmailsService {
       html,
     };
     return this.sendEmail(emailData, dto.subscriptionDetailId);
+  }
+
+  async sendPasswordRecoveryEmail(
+    dto: SendPasswordRecoveryEmailDto,
+  ): Promise<SendEmailResponseDto> {
+    // Obtener la configuración del tenant para verificar si tiene logo personalizado
+    const { config } = dto.subscriptionDetailId
+      ? await this.emailProviderFactory.getProviderForTenant(
+          dto.subscriptionDetailId,
+        )
+      : { config: null };
+    const logoUrl = config?.logoUrl || dto.logoUrl;
+    const html = buildPasswordRecoveryEmail({
+      fullName: dto.fullName,
+      username: dto.username,
+      pin: dto.pin,
+      companyName: dto.companyName,
+      logoUrl,
+      primaryColor: dto.primaryColor,
+    });
+    const emailData: SendEmailDto = {
+      from: `${envs.email.fromName} <${envs.email.from}>`,
+      to: dto.email,
+      subject: 'Recuperación de Contraseña',
+      html,
+    };
+    // Si no tiene subscriptionDetailId, usar el proveedor por defecto
+    return this.sendEmail(
+      emailData,
+      dto.subscriptionDetailId || 'default-provider',
+    );
   }
 }

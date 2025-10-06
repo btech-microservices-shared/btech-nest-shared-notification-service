@@ -4,13 +4,15 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
-import { catchError, Observable, tap, throwError } from 'rxjs';
+import { catchError, Observable, mergeMap, throwError } from 'rxjs';
 import { AuditClient } from '../clients';
 import { createAuditDataFormatted } from '../helpers';
 import { SendLabReservationEmailDetailsDto } from 'src/emails/dto/send-lab-reservation-email.dto';
 import { SendSupportTicketsEmailDto } from 'src/emails/dto/send-support-tickets-email.dto';
 
 import type { ServerUnaryCall, Metadata } from '@grpc/grpc-js';
+import { CustomLog } from '../utils';
+import { CreateAuditLogDto } from '../dto';
 
 interface ErrorWithStatus extends Error {
   status?: number;
@@ -44,7 +46,7 @@ export class AuditInterceptor implements NestInterceptor {
     const serviceName = context.getClass().name;
 
     return next.handle().pipe(
-      tap(() => {
+      mergeMap(async (response: CreateAuditLogDto) => {
         const responseTimeMs = Date.now() - startTime;
 
         const auditData = createAuditDataFormatted({
@@ -57,7 +59,7 @@ export class AuditInterceptor implements NestInterceptor {
           userAgent: undefined,
           requestBody: JSON.stringify(payload),
           responseBody: undefined,
-          statusCode: 0, // gRPC OK
+          statusCode: 0,
           errorMessage: undefined,
           responseTimeMs,
           metadata: Object.fromEntries(
@@ -78,9 +80,18 @@ export class AuditInterceptor implements NestInterceptor {
           traceId,
         });
 
-        this.auditClient.logAction(auditData);
+        CustomLog(
+          'debug',
+          AuditInterceptor.name,
+          'enviando auditoria...',
+          auditData,
+        );
+
+        await this.auditClient.createAuditLog(auditData);
+
+        return response;
       }),
-      catchError((error: ErrorWithStatus) => {
+      catchError(async (error: ErrorWithStatus) => {
         const responseTimeMs = Date.now() - startTime;
 
         const auditData = createAuditDataFormatted({
@@ -114,7 +125,7 @@ export class AuditInterceptor implements NestInterceptor {
           traceId,
         });
 
-        this.auditClient.logAction(auditData);
+        await this.auditClient.createAuditLog(auditData);
 
         return throwError(() => error);
       }),

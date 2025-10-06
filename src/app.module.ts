@@ -7,6 +7,8 @@ import { AUDIT_SERVICE } from './config/constants';
 import { join } from 'path';
 import { envs } from './config/env.config';
 import { AuditClient } from './common/clients';
+import { AuditInterceptor } from './common/interceptors/audit.interceptor';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -33,6 +35,12 @@ import { AuditClient } from './common/clients';
       },
     ]),
   ],
-  providers: [AuditClient],
+  providers: [
+    AuditClient,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuditInterceptor,
+    },
+  ],
 })
 export class AppModule {}

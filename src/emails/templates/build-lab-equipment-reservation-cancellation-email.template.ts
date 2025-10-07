@@ -21,7 +21,7 @@ export const buildLabEquipmentReservationCancellationEmail = (params: {
 
       <!-- Saludo -->
       <p>Hola <strong>${params.subscriberName}</strong>,</p>
-      <p>Lamentamos informarte que tu reserva de equipo en <strong>${params.companyName}</strong> ha sido <strong>cancelada</strong>.</p>
+      <p>Tu solicitud de cancelación de reserva de equipo en <strong>${params.companyName}</strong> ha sido <strong>completada</strong>.</p>
 
       <!-- Detalles de la reserva cancelada -->
       <div style="

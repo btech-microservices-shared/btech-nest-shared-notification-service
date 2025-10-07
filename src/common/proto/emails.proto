@@ -7,6 +7,7 @@ service EmailsService {
   rpc SendSupportTicketsEmail(SendSupportTicketsEmailRequest) returns (SendEmailResponse);
   rpc SendLabEquipmentReservationCancellationEmail(SendLabEquipmentReservationCancellationEmailRequest) returns (SendEmailResponse);
   rpc SendPasswordRecoveryEmail(SendPasswordRecoveryEmailRequest) returns (SendEmailResponse);
+  rpc SendLabReservationReminderEmail(SendLabReservationReminderEmailRequest) returns (SendEmailResponse);
 }
 
 message SendLabReservationEmailRequest {
@@ -91,4 +92,19 @@ message SendPasswordRecoveryEmailRequest {
   string primaryColor = 6;
   string logoUrl = 7;
   optional string subscriptionDetailId = 8;
+}
+
+message SendLabReservationReminderEmailRequest {
+  string to = 1;
+  string companyName = 2;
+  string logoUrl = 3;
+  string userName = 4;
+  int32 reminderMinutes = 5;
+  string reservationDate = 6;
+  string startTime = 7;
+  string endTime = 8;
+  string labDescription = 9;
+  string equipmentDescription = 10;
+  string primaryColor = 11;
+  string subscriptionDetailId = 12;
 }

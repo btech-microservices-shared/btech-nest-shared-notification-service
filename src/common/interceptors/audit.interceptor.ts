@@ -35,11 +35,11 @@ export class AuditInterceptor implements NestInterceptor {
       .switchToRpc()
       .getContext<ServerUnaryCall<EmailPayload, unknown>>();
 
-    const metadata: Metadata = rpcContext.metadata;
-    const projectName = (metadata.get('project')[0] as string) ?? 'unknown';
+    const metadata: Metadata = rpcContext?.metadata;
+    const projectName = (metadata?.get('project')?.[0] as string) ?? 'unknown';
     const traceId =
-      (metadata.get('x-trace-id')[0] as string) ??
-      (metadata.get('x-request-id')[0] as string) ??
+      (metadata?.get('x-trace-id')?.[0] as string) ??
+      (metadata?.get('x-request-id')?.[0] as string) ??
       undefined;
 
     const handlerName = context.getHandler().name;
@@ -62,20 +62,22 @@ export class AuditInterceptor implements NestInterceptor {
           statusCode: 0,
           errorMessage: undefined,
           responseTimeMs,
-          metadata: Object.fromEntries(
-            Object.entries(metadata.getMap()).map(([key, value]) => [
-              key,
-              Array.isArray(value)
-                ? value
-                    .map((v) =>
-                      Buffer.isBuffer(v) ? v.toString('utf8') : String(v),
-                    )
-                    .join(',')
-                : Buffer.isBuffer(value)
-                  ? value.toString('utf8')
-                  : String(value),
-            ]),
-          ),
+          metadata: metadata
+            ? Object.fromEntries(
+                Object.entries(metadata.getMap()).map(([key, value]) => [
+                  key,
+                  Array.isArray(value)
+                    ? value
+                        .map((v) =>
+                          Buffer.isBuffer(v) ? v.toString('utf8') : String(v),
+                        )
+                        .join(',')
+                    : Buffer.isBuffer(value)
+                      ? value.toString('utf8')
+                      : String(value),
+                ]),
+              )
+            : {},
           sessionId: 'anonymous',
           traceId,
         });
@@ -87,7 +89,16 @@ export class AuditInterceptor implements NestInterceptor {
           auditData,
         );
 
-        await this.auditClient.createAuditLog(auditData);
+        try {
+          await this.auditClient.createAuditLog(auditData);
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : 'Error al enviar log de auditoría';
+          // No fallar si el servicio de auditoría está caído
+          console.error('Error enviando log de auditoría:', errorMessage);
+        }
 
         return response;
       }),
@@ -107,25 +118,39 @@ export class AuditInterceptor implements NestInterceptor {
           statusCode: error?.status || 13,
           errorMessage: error?.message || 'Error desconocido',
           responseTimeMs,
-          metadata: Object.fromEntries(
-            Object.entries(metadata.getMap()).map(([key, value]) => [
-              key,
-              Array.isArray(value)
-                ? value
-                    .map((v) =>
-                      Buffer.isBuffer(v) ? v.toString('utf8') : String(v),
-                    )
-                    .join(',')
-                : Buffer.isBuffer(value)
-                  ? value.toString('utf8')
-                  : String(value),
-            ]),
-          ),
+          metadata: metadata
+            ? Object.fromEntries(
+                Object.entries(metadata.getMap()).map(([key, value]) => [
+                  key,
+                  Array.isArray(value)
+                    ? value
+                        .map((v) =>
+                          Buffer.isBuffer(v) ? v.toString('utf8') : String(v),
+                        )
+                        .join(',')
+                    : Buffer.isBuffer(value)
+                      ? value.toString('utf8')
+                      : String(value),
+                ]),
+              )
+            : {},
           sessionId: 'anonymous',
           traceId,
         });
 
-        await this.auditClient.createAuditLog(auditData);
+        try {
+          await this.auditClient.createAuditLog(auditData);
+        } catch (auditError) {
+          // No fallar si el servicio de auditoría está caído
+          const errorMessage =
+            auditError instanceof Error
+              ? auditError.message
+              : 'Error al enviar log de auditoría';
+          console.error(
+            'Error enviando log de auditoría (error):',
+            errorMessage,
+          );
+        }
 
         return throwError(() => error);
       }),

@@ -39,7 +39,7 @@ export class SendPasswordRecoveryEmailDto {
   logoUrl: string;
 
   @IsOptional()
-  @IsUUID('4', {
+  @IsUUID('all', {
     message: 'El subscriptionDetailId debe ser un UUID válido',
   })
   subscriptionDetailId?: string;

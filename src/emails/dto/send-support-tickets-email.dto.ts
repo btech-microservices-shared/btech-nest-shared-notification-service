@@ -56,7 +56,7 @@ export class SendSupportTicketsEmailDto {
   @IsNotEmpty({ message: 'El color primario es obligatorio' })
   primaryColor: string;
 
-  @IsUUID('4', {
+  @IsUUID('all', {
     message: 'El subscriptionDetailId debe ser un UUID válido',
   })
   @IsNotEmpty({ message: 'El subscriptionDetailId es obligatorio' })

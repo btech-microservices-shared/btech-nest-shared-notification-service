@@ -6,6 +6,7 @@ import { SendSupportTicketsEmailDto } from './dto/send-support-tickets-email.dto
 import { SendEmailResponseDto } from './dto/send-email.dto';
 import { SendLabEquipmentReservationCancellationEmailDto } from './dto/send-lab-equipment-reservation-cancellation-email.dto';
 import { SendPasswordRecoveryEmailDto } from './dto/send-password-recovery-email.dto';
+import { SendLabReservationReminderEmailDto } from './dto/send-lab-reservation-reminder-email.dto';
 
 @Controller('email')
 export class EmailsController {
@@ -37,5 +38,12 @@ export class EmailsController {
     data: SendPasswordRecoveryEmailDto,
   ): Promise<SendEmailResponseDto> {
     return this.emailService.sendPasswordRecoveryEmail(data);
+  }
+
+  @GrpcMethod('EmailsService', 'SendLabReservationReminderEmail')
+  async sendLabReservationReminderEmail(
+    data: SendLabReservationReminderEmailDto,
+  ): Promise<SendEmailResponseDto> {
+    return this.emailService.sendLabReservationReminderEmail(data);
   }
 }

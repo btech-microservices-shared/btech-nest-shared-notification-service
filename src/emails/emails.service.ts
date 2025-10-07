@@ -14,11 +14,12 @@ import { SendLabEquipmentReservationCancellationEmailDto } from './dto/send-lab-
 import { buildLabEquipmentReservationCancellationEmail } from './templates/build-lab-equipment-reservation-cancellation-email.template';
 import { SendPasswordRecoveryEmailDto } from './dto/send-password-recovery-email.dto';
 import { buildPasswordRecoveryEmail } from './templates/build-password-recovery-email.template';
+import { SendLabReservationReminderEmailDto } from './dto/send-lab-reservation-reminder-email.dto';
+import { buildLabReservationReminderEmail } from './templates/build-lab-reservation-reminder-email.template';
 
 @Injectable()
 export class EmailsService {
   private readonly logger = new Logger(EmailsService.name);
-
   constructor(private readonly emailProviderFactory: EmailProviderFactory) {}
 
   async sendEmail(
@@ -181,5 +182,33 @@ export class EmailsService {
       emailData,
       dto.subscriptionDetailId || 'default-provider',
     );
+  }
+
+  async sendLabReservationReminderEmail(
+    dto: SendLabReservationReminderEmailDto,
+  ): Promise<SendEmailResponseDto> {
+    const { config } = await this.emailProviderFactory.getProviderForTenant(
+      dto.subscriptionDetailId,
+    );
+    const logoUrl = config?.logoUrl || dto.logoUrl;
+    const html = buildLabReservationReminderEmail({
+      companyName: dto.companyName,
+      logoUrl,
+      userName: dto.userName,
+      reminderMinutes: dto.reminderMinutes,
+      reservationDate: dto.reservationDate,
+      startTime: dto.startTime,
+      endTime: dto.endTime,
+      labDescription: dto.labDescription,
+      equipmentDescription: dto.equipmentDescription,
+      primaryColor: dto.primaryColor,
+    });
+    const emailData: SendEmailDto = {
+      from: `${envs.email.fromName} <${envs.email.from}>`,
+      to: dto.to,
+      subject: `Recordatorio: Tu reserva comienza pronto`,
+      html,
+    };
+    return this.sendEmail(emailData, dto.subscriptionDetailId);
   }
 }

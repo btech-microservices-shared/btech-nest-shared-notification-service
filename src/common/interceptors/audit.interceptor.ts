@@ -5,14 +5,12 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { catchError, Observable, mergeMap, throwError } from 'rxjs';
-import { AuditClient } from '../clients';
+import { AuditClient } from '../../grpc/clients';
 import { createAuditDataFormatted } from '../helpers';
 import { SendLabReservationEmailDetailsDto } from 'src/emails/dto/send-lab-reservation-email.dto';
 import { SendSupportTicketsEmailDto } from 'src/emails/dto/send-support-tickets-email.dto';
-
 import type { ServerUnaryCall, Metadata } from '@grpc/grpc-js';
 import { CustomLog } from '../utils';
-import { CreateAuditLogDto } from '../dto';
 
 interface ErrorWithStatus extends Error {
   status?: number;
@@ -46,7 +44,7 @@ export class AuditInterceptor implements NestInterceptor {
     const serviceName = context.getClass().name;
 
     return next.handle().pipe(
-      mergeMap(async (response: CreateAuditLogDto) => {
+      mergeMap(async (response: unknown) => {
         const responseTimeMs = Date.now() - startTime;
 
         const auditData = createAuditDataFormatted({

@@ -3,10 +3,10 @@ import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 import { ValidationPipe } from '@nestjs/common';
-import { createValidationExceptionFactory } from './common/factories/create-validation-exception.factory';
-import { SERVICE_NAME } from './config/constants';
-import { ServiceExceptionFilter } from './common/filters/service-exception.filter';
-import { envs } from './config/env.config';
+import { createValidationExceptionFactory } from './common/factories';
+import { ServiceExceptionFilter } from './common/filters';
+import { envs, SERVICE_NAME } from './config';
+import { format } from 'util';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
@@ -15,8 +15,8 @@ async function bootstrap() {
       transport: Transport.GRPC,
       options: {
         package: 'emails',
-        protoPath: join(process.cwd(), 'src/common/proto/emails.proto'),
-        url: `0.0.0.0:${envs.grpc.port}`,
+        protoPath: join(process.cwd(), 'src/grpc/proto/emails.proto'),
+        url: format('0.0.0.0:%d', envs.grpc.port),
       },
     },
   );

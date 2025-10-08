@@ -1,14 +1,13 @@
 import { Injectable, Inject, OnModuleInit } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
-import { IAuditService } from '../interfaces/audit-service.interface';
-import { CreateAuditLogDto } from '../dto/create-audit-log.dto';
-import { CreateAuditLogResponseDto } from '../dto';
-import { AUDIT_SERVICE } from 'src/config/constants';
+import { AuditService } from '../interfaces';
+import { CreateAuditLogDto, CreateAuditLogResponseDto } from '../dto';
+import { AUDIT_SERVICE } from 'src/config';
 
 @Injectable()
 export class AuditClient implements OnModuleInit {
-  private auditService: IAuditService;
+  private auditService: AuditService;
 
   constructor(
     @Inject(AUDIT_SERVICE)
@@ -16,7 +15,7 @@ export class AuditClient implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    this.auditService = this.client.getService<IAuditService>('AuditService');
+    this.auditService = this.client.getService<AuditService>('AuditService');
   }
 
   async createAuditLog(

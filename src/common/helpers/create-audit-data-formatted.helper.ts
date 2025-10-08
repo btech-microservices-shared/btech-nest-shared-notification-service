@@ -1,4 +1,4 @@
-import { CreateAuditLogDto } from '../dto';
+import { CreateAuditLogDto } from '../../grpc/dto';
 
 export const createAuditDataFormatted = (
   data: CreateAuditLogDto,

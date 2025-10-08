@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import { CreateAuditLogDto, CreateAuditLogResponseDto } from '../dto';
 
-export interface IAuditService {
+export interface AuditService {
   createAuditLog(
     request: CreateAuditLogDto,
   ): Observable<CreateAuditLogResponseDto>;

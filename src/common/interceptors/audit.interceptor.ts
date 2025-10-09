@@ -4,7 +4,7 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
-import { catchError, Observable, mergeMap, throwError } from 'rxjs';
+import { catchError, Observable, tap, throwError, finalize } from 'rxjs';
 import { AuditClient } from '../../grpc/clients';
 import { createAuditDataFormatted } from '../helpers';
 import { SendLabReservationEmailDetailsDto } from 'src/emails/dto/send-lab-reservation-email.dto';
@@ -43,8 +43,22 @@ export class AuditInterceptor implements NestInterceptor {
     const handlerName = context.getHandler().name;
     const serviceName = context.getClass().name;
 
+    let hasError = false;
+    let capturedError: ErrorWithStatus | null = null;
+
     return next.handle().pipe(
-      mergeMap(async (response: unknown) => {
+      tap(() => {
+        // Marcar como exitoso
+        hasError = false;
+      }),
+      catchError((error: ErrorWithStatus) => {
+        // Capturar el error
+        hasError = true;
+        capturedError = error;
+        return throwError(() => error);
+      }),
+      finalize(() => {
+        // Ejecutar después de que el observable termine (éxito o error)
         const responseTimeMs = Date.now() - startTime;
 
         const auditData = createAuditDataFormatted({
@@ -57,8 +71,10 @@ export class AuditInterceptor implements NestInterceptor {
           userAgent: undefined,
           requestBody: JSON.stringify(payload),
           responseBody: undefined,
-          statusCode: 0,
-          errorMessage: undefined,
+          statusCode: hasError ? (capturedError?.status || 13) : 0,
+          errorMessage: hasError
+            ? capturedError?.message || 'Error desconocido'
+            : undefined,
           responseTimeMs,
           metadata: metadata
             ? Object.fromEntries(
@@ -87,70 +103,16 @@ export class AuditInterceptor implements NestInterceptor {
           auditData,
         );
 
-        try {
-          await this.auditClient.createAuditLog(auditData);
-        } catch (error) {
-          const errorMessage =
-            error instanceof Error
-              ? error.message
-              : 'Error al enviar log de auditoría';
-          // No fallar si el servicio de auditoría está caído
-          console.error('Error enviando log de auditoría:', errorMessage);
-        }
-
-        return response;
-      }),
-      catchError(async (error: ErrorWithStatus) => {
-        const responseTimeMs = Date.now() - startTime;
-
-        const auditData = createAuditDataFormatted({
-          method: handlerName,
-          route: serviceName,
-          serviceName: 'email-service',
-          projectName,
-          userId: 'anonymous',
-          ipAddress: '0.0.0.0',
-          userAgent: undefined,
-          requestBody: JSON.stringify(payload),
-          responseBody: undefined,
-          statusCode: error?.status || 13,
-          errorMessage: error?.message || 'Error desconocido',
-          responseTimeMs,
-          metadata: metadata
-            ? Object.fromEntries(
-                Object.entries(metadata.getMap()).map(([key, value]) => [
-                  key,
-                  Array.isArray(value)
-                    ? value
-                        .map((v) =>
-                          Buffer.isBuffer(v) ? v.toString('utf8') : String(v),
-                        )
-                        .join(',')
-                    : Buffer.isBuffer(value)
-                      ? value.toString('utf8')
-                      : String(value),
-                ]),
-              )
-            : {},
-          sessionId: 'anonymous',
-          traceId,
-        });
-
-        try {
-          await this.auditClient.createAuditLog(auditData);
-        } catch (auditError) {
-          // No fallar si el servicio de auditoría está caído
-          const errorMessage =
-            auditError instanceof Error
-              ? auditError.message
-              : 'Error al enviar log de auditoría';
-          console.error(
-            'Error enviando log de auditoría (error):',
-            errorMessage,
-          );
-        }
-
-        return throwError(() => error);
+        // Fire and forget - no await
+        this.auditClient
+          .createAuditLog(auditData)
+          .catch((error) => {
+            const errorMessage =
+              error instanceof Error
+                ? error.message
+                : 'Error al enviar log de auditoría';
+            console.error('Error enviando log de auditoría:', errorMessage);
+          });
       }),
     );
   }

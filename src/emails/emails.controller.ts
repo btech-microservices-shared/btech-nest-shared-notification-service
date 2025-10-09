@@ -37,6 +37,7 @@ export class EmailsController {
   async sendPasswordRecoveryEmail(
     data: SendPasswordRecoveryEmailDto,
   ): Promise<SendEmailResponseDto> {
+    console.log('SendPasswordRecoveryEmail');
     return this.emailService.sendPasswordRecoveryEmail(data);
   }
 

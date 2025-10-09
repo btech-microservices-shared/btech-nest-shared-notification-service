@@ -8,6 +8,9 @@ service EmailsService {
   rpc SendLabEquipmentReservationCancellationEmail(SendLabEquipmentReservationCancellationEmailRequest) returns (SendEmailResponse);
   rpc SendPasswordRecoveryEmail(SendPasswordRecoveryEmailRequest) returns (SendEmailResponse);
   rpc SendLabReservationReminderEmail(SendLabReservationReminderEmailRequest) returns (SendEmailResponse);
+  rpc SendPasswordRecoveryConfirmation(SendPasswordRecoveryConfirmationRequest) returns (SendEmailResponse);
+  rpc SendInitialPasswordConfirmation(SendInitialPasswordConfirmationRequest) returns (SendEmailResponse);
+  rpc SendPasswordChangeConfirmation(SendPasswordChangeConfirmationRequest) returns (SendEmailResponse);
 }
 
 message SendLabReservationEmailRequest {
@@ -107,4 +110,34 @@ message SendLabReservationReminderEmailRequest {
   string equipmentDescription = 10;
   string primaryColor = 11;
   string subscriptionDetailId = 12;
+}
+
+message SendPasswordRecoveryConfirmationRequest {
+  string email = 1;
+  string username = 2;
+  string fullName = 3;
+  string companyName = 4;
+  string primaryColor = 5;
+  string logoUrl = 6;
+  optional string subscriptionDetailId = 7;
+}
+
+message SendInitialPasswordConfirmationRequest {
+  string email = 1;
+  string username = 2;
+  string fullName = 3;
+  string companyName = 4;
+  string primaryColor = 5;
+  string logoUrl = 6;
+  optional string subscriptionDetailId = 7;
+}
+
+message SendPasswordChangeConfirmationRequest {
+  string email = 1;
+  string username = 2;
+  string fullName = 3;
+  string companyName = 4;
+  string primaryColor = 5;
+  string logoUrl = 6;
+  optional string subscriptionDetailId = 7;
 }

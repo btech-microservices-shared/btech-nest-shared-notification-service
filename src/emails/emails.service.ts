@@ -16,6 +16,12 @@ import { SendPasswordRecoveryEmailDto } from './dto/send-password-recovery-email
 import { buildPasswordRecoveryEmail } from './templates/build-password-recovery-email.template';
 import { SendLabReservationReminderEmailDto } from './dto/send-lab-reservation-reminder-email.dto';
 import { buildLabReservationReminderEmail } from './templates/build-lab-reservation-reminder-email.template';
+import { SendPasswordRecoveryConfirmationDto } from './dto/send-password-recovery-confirmation.dto';
+import { buildPasswordRecoveryConfirmationEmail } from './templates/build-password-recovery-confirmation.template';
+import { SendInitialPasswordConfirmationDto } from './dto/send-initial-password-confirmation.dto';
+import { buildInitialPasswordConfirmationEmail } from './templates/build-initial-password-confirmation.template';
+import { SendPasswordChangeConfirmationDto } from './dto/send-password-change-confirmation.dto';
+import { buildPasswordChangeConfirmationEmail } from './templates/build-password-change-confirmation.template';
 
 @Injectable()
 export class EmailsService {
@@ -210,5 +216,89 @@ export class EmailsService {
       html,
     };
     return this.sendEmail(emailData, dto.subscriptionDetailId);
+  }
+
+  async sendPasswordRecoveryConfirmation(
+    dto: SendPasswordRecoveryConfirmationDto,
+  ): Promise<SendEmailResponseDto> {
+    const { config } = dto.subscriptionDetailId
+      ? await this.emailProviderFactory.getProviderForTenant(
+          dto.subscriptionDetailId,
+        )
+      : { config: null };
+    const logoUrl = config?.logoUrl || dto.logoUrl;
+    const html = buildPasswordRecoveryConfirmationEmail({
+      fullName: dto.fullName,
+      username: dto.username,
+      companyName: dto.companyName,
+      logoUrl,
+      primaryColor: dto.primaryColor,
+    });
+    const emailData: SendEmailDto = {
+      from: `${envs.email.fromName} <${envs.email.from}>`,
+      to: dto.email,
+      subject: 'Contraseña Recuperada Exitosamente',
+      html,
+    };
+    return this.sendEmail(
+      emailData,
+      dto.subscriptionDetailId || 'default-provider',
+    );
+  }
+
+  async sendInitialPasswordConfirmation(
+    dto: SendInitialPasswordConfirmationDto,
+  ): Promise<SendEmailResponseDto> {
+    const { config } = dto.subscriptionDetailId
+      ? await this.emailProviderFactory.getProviderForTenant(
+          dto.subscriptionDetailId,
+        )
+      : { config: null };
+    const logoUrl = config?.logoUrl || dto.logoUrl;
+    const html = buildInitialPasswordConfirmationEmail({
+      fullName: dto.fullName,
+      username: dto.username,
+      companyName: dto.companyName,
+      logoUrl,
+      primaryColor: dto.primaryColor,
+    });
+    const emailData: SendEmailDto = {
+      from: `${envs.email.fromName} <${envs.email.from}>`,
+      to: dto.email,
+      subject: '¡Bienvenido! Tu cuenta ha sido creada',
+      html,
+    };
+    return this.sendEmail(
+      emailData,
+      dto.subscriptionDetailId || 'default-provider',
+    );
+  }
+
+  async sendPasswordChangeConfirmation(
+    dto: SendPasswordChangeConfirmationDto,
+  ): Promise<SendEmailResponseDto> {
+    const { config } = dto.subscriptionDetailId
+      ? await this.emailProviderFactory.getProviderForTenant(
+          dto.subscriptionDetailId,
+        )
+      : { config: null };
+    const logoUrl = config?.logoUrl || dto.logoUrl;
+    const html = buildPasswordChangeConfirmationEmail({
+      fullName: dto.fullName,
+      username: dto.username,
+      companyName: dto.companyName,
+      logoUrl,
+      primaryColor: dto.primaryColor,
+    });
+    const emailData: SendEmailDto = {
+      from: `${envs.email.fromName} <${envs.email.from}>`,
+      to: dto.email,
+      subject: 'Contraseña Actualizada Exitosamente',
+      html,
+    };
+    return this.sendEmail(
+      emailData,
+      dto.subscriptionDetailId || 'default-provider',
+    );
   }
 }

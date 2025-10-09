@@ -7,6 +7,9 @@ import { SendEmailResponseDto } from './dto/send-email.dto';
 import { SendLabEquipmentReservationCancellationEmailDto } from './dto/send-lab-equipment-reservation-cancellation-email.dto';
 import { SendPasswordRecoveryEmailDto } from './dto/send-password-recovery-email.dto';
 import { SendLabReservationReminderEmailDto } from './dto/send-lab-reservation-reminder-email.dto';
+import { SendPasswordRecoveryConfirmationDto } from './dto/send-password-recovery-confirmation.dto';
+import { SendInitialPasswordConfirmationDto } from './dto/send-initial-password-confirmation.dto';
+import { SendPasswordChangeConfirmationDto } from './dto/send-password-change-confirmation.dto';
 
 @Controller('email')
 export class EmailsController {
@@ -46,5 +49,26 @@ export class EmailsController {
     data: SendLabReservationReminderEmailDto,
   ): Promise<SendEmailResponseDto> {
     return this.emailService.sendLabReservationReminderEmail(data);
+  }
+
+  @GrpcMethod('EmailsService', 'SendPasswordRecoveryConfirmation')
+  async sendPasswordRecoveryConfirmation(
+    data: SendPasswordRecoveryConfirmationDto,
+  ): Promise<SendEmailResponseDto> {
+    return this.emailService.sendPasswordRecoveryConfirmation(data);
+  }
+
+  @GrpcMethod('EmailsService', 'SendInitialPasswordConfirmation')
+  async sendInitialPasswordConfirmation(
+    data: SendInitialPasswordConfirmationDto,
+  ): Promise<SendEmailResponseDto> {
+    return this.emailService.sendInitialPasswordConfirmation(data);
+  }
+
+  @GrpcMethod('EmailsService', 'SendPasswordChangeConfirmation')
+  async sendPasswordChangeConfirmation(
+    data: SendPasswordChangeConfirmationDto,
+  ): Promise<SendEmailResponseDto> {
+    return this.emailService.sendPasswordChangeConfirmation(data);
   }
 }

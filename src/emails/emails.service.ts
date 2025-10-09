@@ -265,7 +265,7 @@ export class EmailsService {
     const emailData: SendEmailDto = {
       from: `${envs.email.fromName} <${envs.email.from}>`,
       to: dto.email,
-      subject: '¡Bienvenido! Tu cuenta ha sido creada',
+      subject: 'Contraseña Inicial Configurada',
       html,
     };
     return this.sendEmail(

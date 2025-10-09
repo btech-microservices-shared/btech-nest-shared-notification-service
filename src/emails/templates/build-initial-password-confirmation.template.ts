@@ -53,11 +53,11 @@ export const buildInitialPasswordConfirmationEmail = (params: {
         border-left: 4px solid #28a745;
         border-radius: 0 6px 6px 0;
       ">
-        <h3 style="margin: 0 0 10px 0; color: #155724; font-size: 16px;">🔐 Acceso Activo</h3>
+        <h3 style="margin: 0 0 10px 0; color: #155724; font-size: 16px;">🔐 Contraseña Activa</h3>
         <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #155724;">
-          <li style="margin: 5px 0;">Tu contraseña ha sido guardada correctamente</li>
-          <li style="margin: 5px 0;">Ya puedes acceder a la plataforma cuando lo necesites</li>
-          <li style="margin: 5px 0;">Tu cuenta está completamente configurada</li>
+          <li style="margin: 5px 0;">Tu contraseña inicial está activa y lista para usar</li>
+          <li style="margin: 5px 0;">Puedes iniciar sesión cuando lo necesites</li>
+          <li style="margin: 5px 0;">Recuerda mantener tu contraseña segura</li>
         </ul>
       </div>
 

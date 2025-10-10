@@ -31,10 +31,11 @@ export class Office365Provider implements EmailProvider {
 
   async sendEmail(emailData: EmailData): Promise<EmailResult> {
     try {
-      await this.transporter.sendMail(emailData);
+      const info = await this.transporter.sendMail(emailData);
       return {
         success: true,
-        message: 'Email enviado exitosamente con Office365',
+        message: 'Email enviado exitosamente',
+        messageId: info.messageId,
       };
     } catch (error) {
       if (error instanceof RpcException) throw error;

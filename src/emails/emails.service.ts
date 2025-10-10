@@ -68,6 +68,7 @@ export class EmailsService {
       return {
         success: true,
         message: result.message,
+        messageId: result.messageId,
       };
     } catch (error) {
       const errorMessage =

@@ -18,5 +18,6 @@ import { EmailServerConfig } from './entities/email-server-config.entity';
     DynamicSmtpProvider,
     EmailServerConfigService,
   ],
+  exports: [EmailServerConfigService],
 })
 export class EmailsModule {}

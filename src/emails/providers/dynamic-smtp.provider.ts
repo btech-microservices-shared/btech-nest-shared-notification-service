@@ -48,10 +48,11 @@ export class DynamicSmtpProvider implements EmailProvider {
             ? `${config.fromName} <${config.fromEmail}>`
             : emailData.from,
       };
-      await transporter.sendMail(mailOptions);
+      const info = await transporter.sendMail(mailOptions);
       return {
         success: true,
-        message: `Email enviado exitosamente desde servidor SMTP de tenant (${config.host})`,
+        message: 'Email enviado exitosamente',
+        messageId: info.messageId,
       };
     } catch (error) {
       if (error instanceof RpcException) throw error;

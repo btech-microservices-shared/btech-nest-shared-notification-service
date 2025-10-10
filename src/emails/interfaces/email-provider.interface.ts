@@ -14,4 +14,5 @@ export interface EmailResult {
   success: boolean;
   message: string;
   error?: string;
+  messageId?: string;
 }

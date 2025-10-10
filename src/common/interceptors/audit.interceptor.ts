@@ -170,7 +170,7 @@ export class AuditInterceptor implements NestInterceptor {
         userAgent: undefined,
         requestBody: JSON.stringify(enrichedPayload),
         responseBody,
-        statusCode: hasError ? capturedError?.status || 13 : 0,
+        statusCode: hasError ? capturedError?.status || 500 : 200,
         errorMessage: hasError
           ? capturedError?.message || 'Error desconocido'
           : undefined,

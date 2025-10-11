@@ -5,7 +5,11 @@ import {
   IsInt,
   Min,
   IsUUID,
+  IsOptional,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+import { GrpcMetadataDto } from './grpc-metadata.dto';
 
 export class SendLabReservationReminderEmailDto {
   @IsEmail(
@@ -65,4 +69,9 @@ export class SendLabReservationReminderEmailDto {
   })
   @IsNotEmpty({ message: 'El subscriptionDetailId es obligatorio' })
   subscriptionDetailId: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GrpcMetadataDto)
+  grpcMetadata?: GrpcMetadataDto;
 }

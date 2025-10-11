@@ -13,6 +13,12 @@ service EmailsService {
   rpc SendPasswordChangeConfirmation(SendPasswordChangeConfirmationRequest) returns (SendEmailResponse);
 }
 
+message GrpcMetadata {
+  optional string ipAddress = 1;
+  optional string userAgent = 2;
+  optional string subscriberId = 3;
+}
+
 message SendLabReservationEmailRequest {
   string to = 1;
   string companyName = 2;
@@ -22,6 +28,7 @@ message SendLabReservationEmailRequest {
   repeated ReservationDetail details = 6;
   string primaryColor = 7;
   string subscriptionDetailId = 8;
+  optional GrpcMetadata grpcMetadata = 9;
 }
 
 message ReservationDetail {
@@ -59,12 +66,15 @@ message SendSupportTicketsEmailRequest {
   string category = 11;
   string createdDate = 12;
   string primaryColor = 13;
+  string subscriptionDetailId = 14;
+  optional GrpcMetadata grpcMetadata = 15;
 }
 
 message SendLabEquipmentReservationCancellationEmailRequest {
   string reservationLaboratoryEquipmentId = 1;
   EmailNotificationMetadata metadata = 2;
   string subscriptionDetailId = 3;
+  optional GrpcMetadata grpcMetadata = 4;
 }
 
 message EmailNotificationMetadata {
@@ -95,6 +105,7 @@ message SendPasswordRecoveryEmailRequest {
   string primaryColor = 6;
   string logoUrl = 7;
   optional string subscriptionDetailId = 8;
+  optional GrpcMetadata grpcMetadata = 9;
 }
 
 message SendLabReservationReminderEmailRequest {
@@ -110,6 +121,7 @@ message SendLabReservationReminderEmailRequest {
   string equipmentDescription = 10;
   string primaryColor = 11;
   string subscriptionDetailId = 12;
+  optional GrpcMetadata grpcMetadata = 13;
 }
 
 message SendPasswordRecoveryConfirmationRequest {
@@ -120,6 +132,7 @@ message SendPasswordRecoveryConfirmationRequest {
   string primaryColor = 5;
   string logoUrl = 6;
   optional string subscriptionDetailId = 7;
+  optional GrpcMetadata grpcMetadata = 8;
 }
 
 message SendInitialPasswordConfirmationRequest {
@@ -130,6 +143,7 @@ message SendInitialPasswordConfirmationRequest {
   string primaryColor = 5;
   string logoUrl = 6;
   optional string subscriptionDetailId = 7;
+  optional GrpcMetadata grpcMetadata = 8;
 }
 
 message SendPasswordChangeConfirmationRequest {
@@ -140,4 +154,5 @@ message SendPasswordChangeConfirmationRequest {
   string primaryColor = 5;
   string logoUrl = 6;
   optional string subscriptionDetailId = 7;
+  optional GrpcMetadata grpcMetadata = 8;
 }

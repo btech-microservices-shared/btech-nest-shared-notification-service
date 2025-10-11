@@ -6,14 +6,15 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { catchError, Observable, tap, throwError, finalize } from 'rxjs';
+import type { ServerUnaryCall, Metadata } from '@grpc/grpc-js';
 import { AuditClient } from '../../grpc/clients';
 import { createAuditDataFormatted } from '../helpers';
-import { SendLabReservationEmailDetailsDto } from 'src/emails/dto/send-lab-reservation-email.dto';
-import { SendSupportTicketsEmailDto } from 'src/emails/dto/send-support-tickets-email.dto';
-import type { ServerUnaryCall, Metadata } from '@grpc/grpc-js';
 import { CustomLog } from '../utils';
 import { envs } from '../../config';
 import { EmailServerConfigService } from 'src/emails/services/email-server-config.service';
+import { SendLabReservationEmailDetailsDto } from 'src/emails/dto/send-lab-reservation-email.dto';
+import { SendSupportTicketsEmailDto } from 'src/emails/dto/send-support-tickets-email.dto';
+import { GrpcMetadataDto } from 'src/emails/dto/grpc-metadata.dto';
 
 interface ErrorWithStatus extends Error {
   status?: number;
@@ -22,6 +23,11 @@ interface ErrorWithStatus extends Error {
 type EmailPayload =
   | SendLabReservationEmailDetailsDto
   | SendSupportTicketsEmailDto;
+
+interface PayloadWithGrpcMetadata {
+  grpcMetadata?: GrpcMetadataDto;
+  [key: string]: any;
+}
 
 @Injectable()
 export class AuditInterceptor implements NestInterceptor {
@@ -40,11 +46,27 @@ export class AuditInterceptor implements NestInterceptor {
       .getContext<ServerUnaryCall<EmailPayload, unknown>>();
 
     const metadata: Metadata = rpcContext?.metadata;
+
+    // Obtener grpcMetadata del payload si existe
+    const grpcMetadata = (payload as PayloadWithGrpcMetadata)?.grpcMetadata;
+
     const projectName = (metadata?.get('project')?.[0] as string) ?? 'VDI';
     const traceId =
       (metadata?.get('x-trace-id')?.[0] as string) ??
       (metadata?.get('x-request-id')?.[0] as string) ??
       undefined;
+    const ipAddress =
+      grpcMetadata?.ipAddress ||
+      (metadata?.get('x-client-ip')?.[0] as string) ||
+      '127.0.0.1';
+    const userAgent =
+      grpcMetadata?.userAgent ||
+      (metadata?.get('x-user-agent')?.[0] as string) ||
+      'system-scheduler';
+    const subscriberId =
+      grpcMetadata?.subscriberId ||
+      (metadata?.get('x-subscriber-id')?.[0] as string) ||
+      'system';
 
     const handlerName = context.getHandler().name;
     const serviceName = context.getClass().name;
@@ -55,22 +77,18 @@ export class AuditInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       tap((response) => {
-        // Marcar como exitoso y capturar la respuesta
         hasError = false;
         responseData = response;
       }),
       catchError((error: ErrorWithStatus) => {
-        // Capturar el error
         hasError = true;
         capturedError = error;
         return throwError(() => error);
       }),
       finalize(() => {
-        // Ejecutar después de que el observable termine (éxito o error)
         const responseTimeMs = Date.now() - startTime;
 
-        // Obtener el correo de origen de forma asíncrona (fire and forget)
-        this.getEmailFromAndSendAudit({
+        this.sendAuditLog({
           payload,
           handlerName,
           serviceName,
@@ -81,12 +99,15 @@ export class AuditInterceptor implements NestInterceptor {
           responseTimeMs,
           metadata,
           traceId,
+          ipAddress,
+          userAgent,
+          subscriberId,
         });
       }),
     );
   }
 
-  private async getEmailFromAndSendAudit(params: {
+  private async sendAuditLog(params: {
     payload: EmailPayload;
     handlerName: string;
     serviceName: string;
@@ -97,6 +118,9 @@ export class AuditInterceptor implements NestInterceptor {
     responseTimeMs: number;
     metadata: Metadata;
     traceId?: string;
+    ipAddress: string;
+    userAgent?: string;
+    subscriberId: string;
   }): Promise<void> {
     try {
       const {
@@ -110,99 +134,52 @@ export class AuditInterceptor implements NestInterceptor {
         responseTimeMs,
         metadata,
         traceId,
+        ipAddress,
+        userAgent,
+        subscriberId,
       } = params;
 
-      // Valores por defecto
-      let emailFrom = envs.email.from;
-      let emailFromName = envs.email.fromName;
+      const { emailFrom, emailFromName } =
+        await this.getEmailFromConfig(payload);
 
-      // Intentar obtener la configuración del tenant si existe subscriptionDetailId
-      if (
-        payload &&
-        'subscriptionDetailId' in payload &&
-        payload.subscriptionDetailId
-      ) {
-        try {
-          const tenantConfig =
-            await this.emailServerConfigService.findBySubscriptionDetailId(
-              payload.subscriptionDetailId,
-            );
-          if (tenantConfig?.fromEmail) {
-            emailFrom = tenantConfig.fromEmail;
-          }
-          if (tenantConfig?.fromName) {
-            emailFromName = tenantConfig.fromName;
-          }
-        } catch (error) {
-          // Si hay error al obtener la config, usar valores por defecto
-          CustomLog(
-            'warn',
-            AuditInterceptor.name,
-            'Error al obtener configuración del tenant, usando valores por defecto',
-          );
-        }
-      }
+      // Crear una copia del payload sin grpcMetadata
+      const { grpcMetadata: _, ...payloadWithoutMetadata } =
+        payload as PayloadWithGrpcMetadata;
 
       // Agregar la información del correo de origen al payload
       const enrichedPayload = {
-        ...payload,
+        ...payloadWithoutMetadata,
         emailFrom: `${emailFromName} <${emailFrom}>`,
       };
 
       // Construir el responseBody dependiendo si hubo error o éxito
-      let responseBody: string | undefined;
-      if (hasError) {
-        responseBody = JSON.stringify({
-          success: false,
-          message: capturedError?.message || 'Error desconocido',
-        });
-      } else if (responseData) {
-        responseBody = JSON.stringify(responseData);
-      }
+      const responseBody = hasError
+        ? JSON.stringify({
+            success: false,
+            message: capturedError?.message || 'Error desconocido',
+          })
+        : responseData
+          ? JSON.stringify(responseData)
+          : undefined;
 
       const auditData = createAuditDataFormatted({
         method: handlerName,
         route: serviceName,
         serviceName: 'email-service',
         projectName,
-        userId: 'anonymous',
-        ipAddress: '0.0.0.0',
-        userAgent: undefined,
+        userId: subscriberId,
+        ipAddress,
+        userAgent,
         requestBody: JSON.stringify(enrichedPayload),
         responseBody,
         statusCode: hasError ? capturedError?.status || 500 : 200,
-        errorMessage: hasError
-          ? capturedError?.message || 'Error desconocido'
-          : undefined,
+        errorMessage: hasError ? capturedError?.message : undefined,
         responseTimeMs,
-        metadata: metadata
-          ? Object.fromEntries(
-              Object.entries(metadata.getMap()).map(([key, value]) => [
-                key,
-                Array.isArray(value)
-                  ? value
-                      .map((v) =>
-                        Buffer.isBuffer(v) ? v.toString('utf8') : String(v),
-                      )
-                      .join(',')
-                  : Buffer.isBuffer(value)
-                    ? value.toString('utf8')
-                    : String(value),
-              ]),
-            )
-          : {},
+        metadata: this.formatMetadata(metadata),
         sessionId: 'anonymous',
         traceId,
       });
 
-      CustomLog(
-        'debug',
-        AuditInterceptor.name,
-        'enviando auditoria...',
-        auditData,
-      );
-
-      // Enviar el log de auditoría
       await this.auditClient.createAuditLog(auditData);
     } catch (error) {
       const errorMessage =
@@ -211,5 +188,56 @@ export class AuditInterceptor implements NestInterceptor {
           : 'Error al enviar log de auditoría';
       console.error('Error enviando log de auditoría:', errorMessage);
     }
+  }
+
+  private async getEmailFromConfig(
+    payload: EmailPayload,
+  ): Promise<{ emailFrom: string; emailFromName: string }> {
+    let emailFrom = envs.email.from;
+    let emailFromName = envs.email.fromName;
+
+    if (
+      payload &&
+      'subscriptionDetailId' in payload &&
+      payload.subscriptionDetailId
+    ) {
+      try {
+        const tenantConfig =
+          await this.emailServerConfigService.findBySubscriptionDetailId(
+            payload.subscriptionDetailId,
+          );
+        if (tenantConfig?.fromEmail) {
+          emailFrom = tenantConfig.fromEmail;
+        }
+        if (tenantConfig?.fromName) {
+          emailFromName = tenantConfig.fromName;
+        }
+      } catch (error) {
+        CustomLog(
+          'warn',
+          AuditInterceptor.name,
+          'Error al obtener configuración del tenant, usando valores por defecto',
+        );
+      }
+    }
+
+    return { emailFrom, emailFromName };
+  }
+
+  private formatMetadata(metadata: Metadata): Record<string, string> {
+    if (!metadata) return {};
+
+    return Object.fromEntries(
+      Object.entries(metadata.getMap()).map(([key, value]) => [
+        key,
+        Array.isArray(value)
+          ? value
+              .map((v) => (Buffer.isBuffer(v) ? v.toString('utf8') : String(v)))
+              .join(',')
+          : Buffer.isBuffer(value)
+            ? value.toString('utf8')
+            : String(value),
+      ]),
+    );
   }
 }

@@ -5,8 +5,10 @@ import {
   IsObject,
   ValidateNested,
   IsUUID,
+  IsOptional,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { GrpcMetadataDto } from './grpc-metadata.dto';
 
 export class EmailNotificationDataDto {
   @IsString({ message: 'La URL del logo debe ser una cadena de texto' })
@@ -102,4 +104,9 @@ export class SendLabEquipmentReservationCancellationEmailDto {
   })
   @IsNotEmpty({ message: 'El subscriptionDetailId es obligatorio' })
   subscriptionDetailId: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GrpcMetadataDto)
+  grpcMetadata?: GrpcMetadataDto;
 }

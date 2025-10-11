@@ -4,7 +4,10 @@ import {
   IsNotEmpty,
   IsOptional,
   IsUUID,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+import { GrpcMetadataDto } from './grpc-metadata.dto';
 
 export class SendPasswordChangeConfirmationDto {
   @IsEmail(
@@ -39,4 +42,9 @@ export class SendPasswordChangeConfirmationDto {
     message: 'El subscriptionDetailId debe ser un UUID válido',
   })
   subscriptionDetailId?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GrpcMetadataDto)
+  grpcMetadata?: GrpcMetadataDto;
 }

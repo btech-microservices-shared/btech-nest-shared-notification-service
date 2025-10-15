@@ -93,6 +93,7 @@ export class EmailsService {
     const html = buildLabReservationEmail({
       ...sendLabReservationEmailDto,
       logoUrl,
+      appDomain: envs.app.domain,
     });
     const emailData: SendEmailDto = {
       from: `${envs.email.fromName} <${envs.email.from}>`,
@@ -209,6 +210,8 @@ export class EmailsService {
       labDescription: dto.labDescription,
       equipmentDescription: dto.equipmentDescription,
       primaryColor: dto.primaryColor,
+      reservationLaboratoryEquipmentId: dto.reservationLaboratoryEquipmentId,
+      appDomain: envs.app.domain,
     });
     const emailData: SendEmailDto = {
       from: `${envs.email.fromName} <${envs.email.from}>`,

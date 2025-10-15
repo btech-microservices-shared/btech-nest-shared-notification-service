@@ -82,6 +82,12 @@ export class SendLabReservationEmailDetailsDto {
   @IsNotEmpty({ message: 'La fecha es obligatoria' })
   date: string;
 
+  @IsUUID('all', {
+    message: 'El reservationLaboratoryEquipmentId debe ser un UUID válido',
+  })
+  @IsNotEmpty({ message: 'El reservationLaboratoryEquipmentId es obligatorio' })
+  reservationLaboratoryEquipmentId: string;
+
   @IsObject({ message: 'Los metadatos deben ser un objeto' })
   @IsNotEmpty({ message: 'Los metadatos son obligatorios' })
   metadata: Record<string, any>;

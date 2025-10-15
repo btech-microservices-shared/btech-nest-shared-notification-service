@@ -9,6 +9,8 @@ export const buildLabReservationReminderEmail = (params: {
   labDescription: string;
   equipmentDescription: string;
   primaryColor: string;
+  reservationLaboratoryEquipmentId: string;
+  appDomain: string;
 }): string => {
   // Función para quitar segundos del formato HH:mm:ss
   const formatTime = (time: string): string => {
@@ -17,6 +19,7 @@ export const buildLabReservationReminderEmail = (params: {
 
   const formattedStartTime = formatTime(params.startTime);
   const formattedEndTime = formatTime(params.endTime);
+  const reservationDetailUrl = `${params.appDomain}/reservation-detail/${params.reservationLaboratoryEquipmentId}`;
 
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -57,6 +60,24 @@ export const buildLabReservationReminderEmail = (params: {
           <p style="margin: 0; font-size: 14px;"><strong>Equipo:</strong> ${params.equipmentDescription}</p>
           <p style="margin: 0; font-size: 14px;"><strong>Fecha:</strong> ${params.reservationDate}</p>
           <p style="margin: 0; font-size: 14px;"><strong>Horario:</strong> ${formattedStartTime} - ${formattedEndTime}</p>
+        </div>
+
+        <!-- Botón Ver detalles -->
+        <div style="text-align: right; margin-top: 8px;">
+          <a href="${reservationDetailUrl}" target="_blank" style="
+            display: inline-block;
+            padding: 4px 14px;
+            font-size: 13px;
+            color: ${params.primaryColor};
+            text-decoration: none;
+            font-weight: 500;
+            white-space: nowrap;
+            border: 2px solid ${params.primaryColor};
+            border-radius: 4px;
+            box-sizing: border-box;
+          ">
+            Ver más detalles
+          </a>
         </div>
       </div>
 

@@ -21,6 +21,7 @@ interface EnvsVars {
   OFFICE365_PASS: string;
   AUDIT_LOGS_GRPC_URL: string;
   AUDIT_TIMEOUT: number;
+  APP_DOMAIN: string;
 }
 
 const envsSchema = joi
@@ -71,6 +72,7 @@ const envsSchema = joi
     }),
     AUDIT_LOGS_GRPC_URL: joi.string().required(),
     AUDIT_TIMEOUT: joi.number().required(),
+    APP_DOMAIN: joi.string().default('http://localhost:5173'),
   })
   .unknown(true);
 
@@ -114,5 +116,8 @@ export const envs = {
   audit: {
     url: envVars.AUDIT_LOGS_GRPC_URL,
     timeout: envVars.AUDIT_TIMEOUT,
+  },
+  app: {
+    domain: envVars.APP_DOMAIN,
   },
 };

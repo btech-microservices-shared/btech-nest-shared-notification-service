@@ -65,6 +65,12 @@ export class SendLabReservationReminderEmailDto {
   primaryColor: string;
 
   @IsUUID('all', {
+    message: 'El reservationLaboratoryEquipmentId debe ser un UUID válido',
+  })
+  @IsNotEmpty({ message: 'El reservationLaboratoryEquipmentId es obligatorio' })
+  reservationLaboratoryEquipmentId: string;
+
+  @IsUUID('all', {
     message: 'El subscriptionDetailId debe ser un UUID válido',
   })
   @IsNotEmpty({ message: 'El subscriptionDetailId es obligatorio' })

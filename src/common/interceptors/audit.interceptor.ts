@@ -162,9 +162,13 @@ export class AuditInterceptor implements NestInterceptor {
           ? JSON.stringify(responseData)
           : undefined;
 
+      // Construir el route en formato gRPC estándar: /package.Service/Method
+      const grpcMethod = this.getGrpcMethodFromHandler(handlerName);
+      const grpcRoute = `/emails.EmailsService/${grpcMethod}`;
+
       const auditData = createAuditDataFormatted({
-        method: handlerName,
-        route: serviceName,
+        method: 'GRPC',
+        route: grpcRoute,
         serviceName: 'email-service',
         projectName,
         userId: subscriberId,
@@ -239,5 +243,15 @@ export class AuditInterceptor implements NestInterceptor {
             : String(value),
       ]),
     );
+  }
+
+  /**
+   * Mapea el nombre del handler de NestJS al nombre del RPC definido en el proto
+   * Convierte camelCase a PascalCase para coincidir con el formato del proto
+   */
+  private getGrpcMethodFromHandler(handlerName: string): string {
+    // El handlerName ya viene en camelCase (ej: sendLabReservationEmail)
+    // El proto usa PascalCase (ej: SendLabReservationEmail)
+    return handlerName.charAt(0).toUpperCase() + handlerName.slice(1);
   }
 }

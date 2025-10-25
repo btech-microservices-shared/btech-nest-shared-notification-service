@@ -27,6 +27,16 @@ export class CreateAuditLogDto {
   @MaxLength(100)
   projectName: string;
 
+  @IsOptional()
+  @IsString()
+  @IsUUID('4', { message: 'subscriptionDetailId debe ser un UUID v4 válido' })
+  subscriptionDetailId?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsUUID('4', { message: 'subscriptionBussineId debe ser un UUID v4 válido' })
+  subscriptionBussineId?: string;
+
   @IsNotEmpty()
   @IsString()
   method: string;

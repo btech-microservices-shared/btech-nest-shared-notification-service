@@ -9,19 +9,21 @@ service AuditService {
 message CreateAuditLogRequest {
   string serviceName = 1;
   string projectName = 2;
-  string method = 3;
-  string route = 4;
-  string userId = 5;
-  string ipAddress = 6;
-  string userAgent = 7;
-  string requestBody = 8;
-  string responseBody = 9;
-  int32 statusCode = 10;
-  string errorMessage = 11;
-  int32 responseTimeMs = 12;
-  map<string, string> metadata = 13;
-  string sessionId = 14;
-  string traceId = 15;
+  string subscriptionDetailId = 3;
+  string subscriptionBussineId = 4;
+  string method = 5;
+  string route = 6;
+  string userId = 7;
+  string ipAddress = 8;
+  string userAgent = 9;
+  string requestBody = 10;
+  string responseBody = 11;
+  int32 statusCode = 12;
+  string errorMessage = 13;
+  int32 responseTimeMs = 14;
+  map<string, string> metadata = 15;
+  string sessionId = 16;
+  string traceId = 17;
 }
 
 message CreateAuditLogResponse {

@@ -10,12 +10,12 @@ export const buildPasswordRecoveryConfirmationEmail = (params: {
       <!-- Encabezado -->
       <div style="text-align: center; margin-bottom: 20px;">
         <img src="${params.logoUrl}" alt="${params.companyName}" style="max-width: 200px;">
-        <h1 style="color: ${params.primaryColor};">Contraseña Recuperada Exitosamente</h1>
+        <h1 style="color: ${params.primaryColor};">Contraseña Reestablecida Exitosamente</h1>
       </div>
 
       <!-- Saludo -->
       <p>Hola <strong>${params.fullName}</strong>,</p>
-      <p>Te confirmamos que tu contraseña ha sido recuperada y actualizada exitosamente en <strong>${params.companyName}</strong>.</p>
+      <p>Te confirmamos que tu contraseña ha sido reestablecida y actualizada exitosamente en <strong>${params.companyName}</strong>.</p>
 
       <!-- Información de la cuenta -->
       <div style="
@@ -42,7 +42,7 @@ export const buildPasswordRecoveryConfirmationEmail = (params: {
       ">
         <h3 style="margin: 0 0 10px 0; color: #2196F3; font-size: 16px;">🔐 Información de Seguridad</h3>
         <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #333;">
-          <li style="margin: 5px 0;">Tu contraseña ha sido cambiada correctamente</li>
+          <li style="margin: 5px 0;">Tu contraseña ha sido reestablecida correctamente</li>
           <li style="margin: 5px 0;">Ya puedes iniciar sesión con tu nueva contraseña</li>
           <li style="margin: 5px 0;">Recuerda mantener tu contraseña segura</li>
         </ul>

@@ -10,6 +10,7 @@ import { SendLabReservationReminderEmailDto } from './dto/send-lab-reservation-r
 import { SendPasswordRecoveryConfirmationDto } from './dto/send-password-recovery-confirmation.dto';
 import { SendInitialPasswordConfirmationDto } from './dto/send-initial-password-confirmation.dto';
 import { SendPasswordChangeConfirmationDto } from './dto/send-password-change-confirmation.dto';
+import { SendUserRegistrationEmailDto } from './dto/send-user-registration-email.dto';
 
 @Controller('email')
 export class EmailsController {
@@ -70,5 +71,12 @@ export class EmailsController {
     data: SendPasswordChangeConfirmationDto,
   ): Promise<SendEmailResponseDto> {
     return this.emailService.sendPasswordChangeConfirmation(data);
+  }
+
+  @GrpcMethod('EmailsService', 'SendUserRegistrationEmail')
+  async sendUserRegistrationEmail(
+    data: SendUserRegistrationEmailDto,
+  ): Promise<SendEmailResponseDto> {
+    return this.emailService.sendUserRegistrationEmail(data);
   }
 }

@@ -22,6 +22,8 @@ import { SendInitialPasswordConfirmationDto } from './dto/send-initial-password-
 import { buildInitialPasswordConfirmationEmail } from './templates/build-initial-password-confirmation.template';
 import { SendPasswordChangeConfirmationDto } from './dto/send-password-change-confirmation.dto';
 import { buildPasswordChangeConfirmationEmail } from './templates/build-password-change-confirmation.template';
+import { SendUserRegistrationEmailDto } from './dto/send-user-registration-email.dto';
+import { buildUserRegistrationEmail } from './templates/build-user-registration-email.template';
 
 @Injectable()
 export class EmailsService {
@@ -298,6 +300,37 @@ export class EmailsService {
       from: `${envs.email.fromName} <${envs.email.from}>`,
       to: dto.email,
       subject: 'Contraseña Actualizada Exitosamente',
+      html,
+    };
+    return this.sendEmail(
+      emailData,
+      dto.subscriptionDetailId || 'default-provider',
+    );
+  }
+
+  async sendUserRegistrationEmail(
+    dto: SendUserRegistrationEmailDto,
+  ): Promise<SendEmailResponseDto> {
+    const { config } = dto.subscriptionDetailId
+      ? await this.emailProviderFactory.getProviderForTenant(
+          dto.subscriptionDetailId,
+        )
+      : { config: null };
+    const logoUrl = config?.logoUrl || dto.logoUrl;
+    const html = buildUserRegistrationEmail({
+      fullName: dto.fullName,
+      username: dto.username,
+      password: dto.password,
+      role: dto.role,
+      codeService: dto.codeService,
+      companyName: dto.companyName,
+      logoUrl,
+      primaryColor: dto.primaryColor,
+    });
+    const emailData: SendEmailDto = {
+      from: `${envs.email.fromName} <${envs.email.from}>`,
+      to: dto.email,
+      subject: 'Bienvenido - Tu Cuenta Ha Sido Creada',
       html,
     };
     return this.sendEmail(

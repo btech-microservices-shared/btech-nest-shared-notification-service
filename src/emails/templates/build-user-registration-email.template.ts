@@ -52,32 +52,7 @@ export const buildUserRegistrationEmail = (params: {
 
       <!-- Saludo -->
       <p>Hola <strong>${params.fullName}</strong>,</p>
-      <p>Tu cuenta ha sido creada exitosamente en <strong>${params.companyName}</strong>. A continuación encontrarás tus credenciales de acceso y la información de tu cuenta.</p>
-
-      <!-- Información del Sistema -->
-      <div style="
-        margin: 25px 0;
-        padding: 20px;
-        border-left: 4px solid ${params.primaryColor};
-        background: #f8f9fa;
-        border-radius: 0 6px 6px 0;
-      ">
-        <h2 style="margin: 0 0 15px 0; color: ${params.primaryColor}; font-size: 18px;">📋 Información del Sistema</h2>
-        <div style="background: #ffffff; border-radius: 6px; padding: 15px; margin-bottom: 10px;">
-          <p style="margin: 0 0 10px 0; font-size: 12px; color: #666;">Sistema</p>
-          <p style="margin: 0; font-size: 16px; font-weight: bold; color: #333;">${serviceDisplayName}</p>
-        </div>
-        ${
-          roleDisplayName
-            ? `
-        <div style="background: #ffffff; border-radius: 6px; padding: 15px; margin-bottom: 10px;">
-          <p style="margin: 0 0 10px 0; font-size: 12px; color: #666;">Rol asignado</p>
-          <p style="margin: 0; font-size: 16px; font-weight: bold; color: #333;">${roleDisplayName}</p>
-        </div>
-        `
-            : ''
-        }
-      </div>
+      <p>Tu cuenta ha sido creada exitosamente en <strong>${params.companyName}</strong> para el <strong>${serviceDisplayName}</strong>${roleDisplayName ? `, con el rol de <strong>${roleDisplayName}</strong>` : ''}. A continuación encontrarás tus credenciales de acceso.</p>
 
       <!-- Credenciales de Acceso -->
       <div style="

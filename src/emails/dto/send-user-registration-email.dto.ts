@@ -45,13 +45,15 @@ export class SendUserRegistrationEmailDto {
   password: string;
 
   @IsEnum(Role, {
-    message: 'El rol debe ser uno de los valores permitidos: CLI, ADM, SAS, SYS, ADC',
+    message:
+      'El rol debe ser uno de los valores permitidos: CLI, ADM, SAS, SYS, ADC',
   })
   @IsNotEmpty({ message: 'El rol es obligatorio' })
   role: Role;
 
   @IsEnum(CodeService, {
-    message: 'El servicio debe ser uno de los valores permitidos: VDI, STO, SUP',
+    message:
+      'El servicio debe ser uno de los valores permitidos: VDI, STO, SUP',
   })
   @IsNotEmpty({ message: 'El servicio es obligatorio' })
   codeService: CodeService;

@@ -8,8 +8,8 @@ import { SendLabReservationEmailDto } from './dto/send-lab-reservation-email.dto
 import { RpcException } from '@nestjs/microservices';
 import { envs } from 'src/config/env.config';
 import { DynamicSmtpProvider } from './providers/dynamic-smtp.provider';
-import { SendSupportTicketsEmailDto } from './dto/send-support-tickets-email.dto';
-import { buildSupportTicketsEmail } from './templates/build-support-tickets-email.template';
+import { SendCreatedTicketEmailDto } from './dto/send-created-ticket-email.dto';
+import { buildCreatedTicketEmail } from './templates/build-created-ticket-email.template';
 import { SendLabEquipmentReservationCancellationEmailDto } from './dto/send-lab-equipment-reservation-cancellation-email.dto';
 import { buildLabEquipmentReservationCancellationEmail } from './templates/build-lab-equipment-reservation-cancellation-email.template';
 import { SendPasswordRecoveryEmailDto } from './dto/send-password-recovery-email.dto';
@@ -109,21 +109,21 @@ export class EmailsService {
     );
   }
 
-  sendSupportTicketsEmail(
-    sendSupportTicketsEmailDto: SendSupportTicketsEmailDto,
+  async sendCreatedTicketEmail(
+    sendCreatedTicketEmailDto: SendCreatedTicketEmailDto,
   ): Promise<SendEmailResponseDto> {
-    const html = buildSupportTicketsEmail(sendSupportTicketsEmailDto);
-    const subject = `[Nuevo Ticket] #${sendSupportTicketsEmailDto.ticketNumber} - ${sendSupportTicketsEmailDto.title}`;
+    const html = buildCreatedTicketEmail(sendCreatedTicketEmailDto);
+    const subject = `[Nuevo Ticket] #${sendCreatedTicketEmailDto.ticketNumber} - ${sendCreatedTicketEmailDto.title}`;
 
     const emailData: SendEmailDto = {
       from: `${envs.email.fromName} <${envs.email.from}>`,
-      to: sendSupportTicketsEmailDto.to,
+      to: sendCreatedTicketEmailDto.to,
       subject,
       html,
     };
     return this.sendEmail(
       emailData,
-      sendSupportTicketsEmailDto.subscriptionDetailId,
+      sendCreatedTicketEmailDto.subscriptionDetailId,
     );
   }
 

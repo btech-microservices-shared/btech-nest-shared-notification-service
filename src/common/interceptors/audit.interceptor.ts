@@ -13,8 +13,9 @@ import { CustomLog } from '../utils';
 import { envs } from '../../config';
 import { EmailServerConfigService } from 'src/emails/services/email-server-config.service';
 import { SendLabReservationEmailDetailsDto } from 'src/emails/dto/send-lab-reservation-email.dto';
-import { SendSupportTicketsEmailDto } from 'src/emails/dto/send-support-tickets-email.dto';
+
 import { GrpcMetadataDto } from 'src/emails/dto/grpc-metadata.dto';
+import { SendCreatedTicketEmailDto } from 'src/emails/dto/send-created-ticket-email.dto';
 
 interface ErrorWithStatus extends Error {
   status?: number;
@@ -22,7 +23,7 @@ interface ErrorWithStatus extends Error {
 
 type EmailPayload =
   | SendLabReservationEmailDetailsDto
-  | SendSupportTicketsEmailDto;
+  | SendCreatedTicketEmailDto;
 
 interface PayloadWithGrpcMetadata {
   grpcMetadata?: GrpcMetadataDto;

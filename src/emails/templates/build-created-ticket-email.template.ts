@@ -1,4 +1,4 @@
-export const buildSupportTicketsEmail = (params: {
+export const buildCreatedTicketEmail = (params: {
   companyName: string;
   logoUrl: string;
   userName: string;
@@ -11,12 +11,18 @@ export const buildSupportTicketsEmail = (params: {
   category: string;
   createdDate: string;
   primaryColor: string;
+  source?: string;
+  tags?: string[];
+  ccEmails?: string[];
+  productName?: string;
+  serialNumber?: string;
 }): string => {
   const getPriorityColor = (priority: string): string => {
-    switch (priority.toLowerCase()) {
+    switch (priority.toUpperCase()) {
       case 'URGENT':
-      case 'HIGH':
         return '#dc3545';
+      case 'HIGH':
+        return '#ff6b6b';
       case 'MEDIUM':
         return '#fd7e14';
       case 'LOW':
@@ -26,18 +32,48 @@ export const buildSupportTicketsEmail = (params: {
     }
   };
 
+  const getPriorityText = (priority: string): string => {
+    switch (priority.toUpperCase()) {
+      case 'URGENT':
+        return 'Urgente';
+      case 'HIGH':
+        return 'Alta';
+      case 'MEDIUM':
+        return 'Media';
+      case 'LOW':
+        return 'Baja';
+      default:
+        return priority;
+    }
+  };
+
+  const getTypeText = (type: string): string => {
+    switch (type.toUpperCase()) {
+      case 'INCIDENT':
+        return 'Incidente';
+      case 'REQUEST':
+        return 'Solicitud';
+      case 'QUESTION':
+        return 'Pregunta';
+      default:
+        return type;
+    }
+  };
+
   const getStatusColor = (status: string): string => {
-    switch (status.toLowerCase()) {
+    switch (status.toUpperCase()) {
+      case 'NEW':
+        return '#0dcaf0';
+      case 'OPEN':
+        return '#28a745';
       case 'PENDING':
         return '#17a2b8';
       case 'ASSIGNED':
         return '#6f42c1';
       case 'IN_PROGRESS':
         return '#ffc107';
-      case 'NEW':
-      case 'OPEN':
-      case 'RESOLVED':
-        return '#28a745';
+      case 'SOLVED':
+        return '#198754';
       case 'CLOSED':
         return '#6c757d';
       case 'IN_COLLABORATION':
@@ -47,22 +83,26 @@ export const buildSupportTicketsEmail = (params: {
     }
   };
 
-  const getStatusText = (statusCode: string): string => {
-    switch (statusCode.toLowerCase()) {
+  const getStatusText = (status: string): string => {
+    switch (status.toUpperCase()) {
+      case 'NEW':
+        return 'Nuevo';
+      case 'OPEN':
+        return 'Abierto';
       case 'PENDING':
         return 'Pendiente';
       case 'ASSIGNED':
         return 'Asignado';
       case 'IN_PROGRESS':
         return 'En Progreso';
-      case 'RESOLVED':
+      case 'SOLVED':
         return 'Resuelto';
       case 'CLOSED':
         return 'Cerrado';
       case 'IN_COLLABORATION':
         return 'En Colaboración';
       default:
-        return statusCode;
+        return status;
     }
   };
 
@@ -97,7 +137,7 @@ export const buildSupportTicketsEmail = (params: {
                 border-radius: 4px;
                 font-size: 12px;
                 font-weight: bold;
-              ">${params.priority.toUpperCase()}</span>
+              ">${getPriorityText(params.priority).toUpperCase()}</span>
               <span style="
                 background: ${getStatusColor(params.status)};
                 color: white;
@@ -119,10 +159,49 @@ export const buildSupportTicketsEmail = (params: {
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; color: #6c757d;">
-            <div><strong>Tipo:</strong> ${params.type}</div>
+            <div><strong>Tipo:</strong> ${getTypeText(params.type)}</div>
             <div><strong>Categoría:</strong> ${params.category}</div>
             <div><strong>Creado:</strong> ${params.createdDate}</div>
+            ${params.source ? `<div><strong>Fuente:</strong> ${params.source}</div>` : ''}
+            ${params.productName ? `<div><strong>Producto:</strong> ${params.productName}</div>` : ''}
+            ${params.serialNumber ? `<div><strong>Número de Serie:</strong> ${params.serialNumber}</div>` : ''}
           </div>
+
+          ${
+            params.tags && params.tags.length > 0
+              ? `
+          <div style="margin-top: 15px;">
+            <strong>Etiquetas:</strong>
+            <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px;">
+              ${params.tags
+                .map(
+                  (tag) => `
+                <span style="
+                  background: ${params.primaryColor}20;
+                  color: ${params.primaryColor};
+                  padding: 3px 8px;
+                  border-radius: 12px;
+                  font-size: 12px;
+                  border: 1px solid ${params.primaryColor}40;
+                ">${tag}</span>
+              `,
+                )
+                .join('')}
+            </div>
+          </div>
+          `
+              : ''
+          }
+
+          ${
+            params.ccEmails && params.ccEmails.length > 0
+              ? `
+          <div style="margin-top: 15px; font-size: 14px;">
+            <strong>CC:</strong> ${params.ccEmails.join(', ')}
+          </div>
+          `
+              : ''
+          }
         </div>
 
         <!-- Call to Action -->

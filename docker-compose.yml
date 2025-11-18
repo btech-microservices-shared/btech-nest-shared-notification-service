@@ -1,7 +1,7 @@
 services:
-  email-service:
+  shared-notification-service:
     build: .
-    container_name: email-service
+    container_name: shared-notification-service
     volumes:
       - ./src:/usr/src/app/src
     command: pnpm start:dev
@@ -12,11 +12,11 @@ services:
       - "50057:50057"  # Puerto gRPC
     restart: unless-stopped
 
-  email-db:
+  shared-notification-db:
     image: mysql:8.0
-    container_name: email-db
+    container_name: shared-notification-db
     environment:
-      MYSQL_DATABASE: email-db
+      MYSQL_DATABASE: shared-notification-db
       MYSQL_ROOT_PASSWORD: 123456
       TZ: America/Lima
     ports:

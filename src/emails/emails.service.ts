@@ -175,7 +175,7 @@ export class EmailsService {
       // Asumimos que el DTO tiene un 'reservationId'
       await this.saveSentEmail(
         result.messageId,
-        (sendLabReservationEmailDto as any).reservationId, // Necesita ser añadido al DTO
+        sendLabReservationEmailDto.reservationId, // Necesita ser añadido al DTO
         'RESERVATION',
       );
     }
@@ -217,7 +217,7 @@ export class EmailsService {
   ): Promise<SendEmailResponseDto> {
     // Asumimos que el DTO tiene un 'reservationId'
     const headers = await this.getHeadersForReply(
-      (dto as any).reservationId, // Necesita ser añadido al DTO
+      dto.reservationId, // Necesita ser añadido al DTO
       'RESERVATION',
     );
 
@@ -252,7 +252,15 @@ export class EmailsService {
       html,
       headers, // Añadimos las cabeceras aquí
     };
-    return this.sendEmail(emailData, dto.subscriptionDetailId);
+    const result = await this.sendEmail(emailData, dto.subscriptionDetailId);
+    if (result.success && result.messageId) {
+      await this.saveSentEmail(
+        result.messageId,
+        dto.reservationId,
+        'RESERVATION',
+      );
+    }
+    return result;
   }
 
   async sendPasswordRecoveryEmail(
@@ -320,7 +328,15 @@ export class EmailsService {
       html,
       headers, // Añadimos las cabeceras aquí
     };
-    return this.sendEmail(emailData, dto.subscriptionDetailId);
+    const result = await this.sendEmail(emailData, dto.subscriptionDetailId);
+    if (result.success && result.messageId) {
+      await this.saveSentEmail(
+        result.messageId,
+        dto.reservationId,
+        'RESERVATION',
+      );
+    }
+    return result;
   }
 
   async sendPasswordRecoveryConfirmation(

@@ -93,6 +93,10 @@ export class SendLabEquipmentReservationCancellationEmailDto {
   })
   reservationLaboratoryEquipmentId: string;
 
+  @IsUUID('all', { message: 'El ID de la reserva debe ser un UUID válido' })
+  @IsNotEmpty({ message: 'El ID de la reserva es obligatorio' })
+  reservationId: string;
+
   @IsObject({ message: 'Los metadatos deben ser un objeto' })
   @IsNotEmpty({ message: 'Los metadatos son obligatorios' })
   @ValidateNested()

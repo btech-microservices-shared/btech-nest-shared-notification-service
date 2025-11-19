@@ -1,4 +1,9 @@
-import { CreateDateColumn, Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+} from 'typeorm';
 
 @Entity('sent_emails')
 export class SentEmail {

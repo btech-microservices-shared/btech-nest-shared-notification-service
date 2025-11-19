@@ -163,7 +163,7 @@ export class EmailsService {
     const emailData: SendEmailDto = {
       from: `${envs.email.fromName} <${envs.email.from}>`,
       to: sendLabReservationEmailDto.to,
-      subject: 'Confirmación de Reserva',
+      subject: 'Notificación de Reserva',
       html,
     };
     const result = await this.sendEmail(
@@ -247,7 +247,7 @@ export class EmailsService {
     const emailData: SendEmailDto = {
       from: `${envs.email.fromName} <${envs.email.from}>`,
       to: dto.metadata.emailNotificationData.subscriberEmail,
-      subject: 'Cancelación de Reserva de Equipo de Laboratorio',
+      subject: 'Notificación de Reserva',
       html,
       headers, // Añadimos las cabeceras aquí
     };
@@ -323,7 +323,7 @@ export class EmailsService {
     const emailData: SendEmailDto = {
       from: `${envs.email.fromName} <${envs.email.from}>`,
       to: dto.to,
-      subject: `Recordatorio: Tu reserva comienza pronto`,
+      subject: `Notificación de Reserva`,
       html,
       headers, // Añadimos las cabeceras aquí
     };

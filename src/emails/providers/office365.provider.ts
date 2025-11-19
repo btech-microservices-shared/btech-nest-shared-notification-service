@@ -32,15 +32,8 @@ export class Office365Provider implements EmailProvider {
   }
 
   async sendEmail(emailData: EmailData): Promise<EmailResult> {
-    const mailData = {
-      from: emailData.from,
-      to: emailData.to,
-      subject: emailData.subject,
-      html: emailData.html,
-      text: emailData.text,
-    };
     try {
-      const info = await this.transporter.sendMail(mailData);
+      const info = await this.transporter.sendMail(emailData);
       return {
         success: true,
         message: 'Email enviado exitosamente',

@@ -42,16 +42,16 @@ export class DynamicSmtpProvider implements EmailProvider {
   ): Promise<EmailResult> {
     try {
       const transporter = this.createTransporter(config);
-      // Sobrescribir el remitente si el tenant tiene configuraci├│n personalizada
       const mailOptions = {
-        to: emailData.to,
-        subject: emailData.subject,
-        html: emailData.html,
-        text: emailData.text,
         from:
           config.fromEmail && config.fromName
             ? `${config.fromName} <${config.fromEmail}>`
             : emailData.from,
+        to: emailData.to,
+        subject: emailData.subject,
+        html: emailData.html,
+        text: emailData.text,
+        headers: emailData.headers || {}, // ← DESCOMENTAR ESTA LÍNEA
       };
       const info = await transporter.sendMail(mailOptions);
       return {

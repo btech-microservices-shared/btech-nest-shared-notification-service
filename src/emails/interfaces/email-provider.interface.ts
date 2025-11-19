@@ -1,10 +1,9 @@
+import { Headers } from 'nodemailer/lib/mailer';
+
+export type EmailHeaders = Headers;
+
 export interface EmailProvider {
   sendEmail(emailData: EmailData, config?: any): Promise<EmailResult>;
-}
-
-export interface EmailHeaders {
-  'In-Reply-To'?: string;
-  References?: string;
 }
 
 export interface EmailData {

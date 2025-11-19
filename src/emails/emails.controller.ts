@@ -1,5 +1,4 @@
 import { Controller } from '@nestjs/common';
-import { EmailsService } from './emails.service';
 import { GrpcMethod } from '@nestjs/microservices';
 import { SendLabReservationEmailDto } from './dto/send-lab-reservation-email.dto';
 import { SendCreatedTicketEmailDto } from './dto/send-created-ticket-email.dto';
@@ -11,30 +10,38 @@ import { SendPasswordRecoveryConfirmationDto } from './dto/send-password-recover
 import { SendInitialPasswordConfirmationDto } from './dto/send-initial-password-confirmation.dto';
 import { SendPasswordChangeConfirmationDto } from './dto/send-password-change-confirmation.dto';
 import { SendUserRegistrationEmailDto } from './dto/send-user-registration-email.dto';
+import { EmailVdiService } from './services/email-vdi.service';
+import { EmailAccessService, EmailSupportService } from './services';
 
 @Controller('email')
 export class EmailsController {
-  constructor(private readonly emailService: EmailsService) {}
+  constructor(
+    private readonly emailVdiService: EmailVdiService,
+    private readonly emailAccessService: EmailAccessService,
+    private readonly emailSupportService: EmailSupportService,
+  ) {}
 
   @GrpcMethod('EmailsService', 'SendLabReservationEmail')
   async sendLabReservationEmail(
     data: SendLabReservationEmailDto,
   ): Promise<SendEmailResponseDto> {
-    return this.emailService.sendLabReservationEmail(data);
+    return this.emailVdiService.sendLabReservationEmail(data);
   }
 
   @GrpcMethod('EmailsService', 'SendCreatedTicketEmail')
   async sendCreatedTicketEmail(
     data: SendCreatedTicketEmailDto,
   ): Promise<SendEmailResponseDto> {
-    return this.emailService.sendCreatedTicketEmail(data);
+    return this.emailSupportService.sendCreatedTicketEmail(data);
   }
 
   @GrpcMethod('EmailsService', 'SendLabEquipmentReservationCancellationEmail')
   async sendLabEquipmentReservationCancellationEmail(
     data: SendLabEquipmentReservationCancellationEmailDto,
   ): Promise<SendEmailResponseDto> {
-    return this.emailService.sendLabEquipmentReservationCancellationEmail(data);
+    return this.emailVdiService.sendLabEquipmentReservationCancellationEmail(
+      data,
+    );
   }
 
   @GrpcMethod('EmailsService', 'SendPasswordRecoveryEmail')
@@ -42,41 +49,41 @@ export class EmailsController {
     data: SendPasswordRecoveryEmailDto,
   ): Promise<SendEmailResponseDto> {
     console.log('SendPasswordRecoveryEmail');
-    return this.emailService.sendPasswordRecoveryEmail(data);
+    return this.emailAccessService.sendPasswordRecoveryEmail(data);
   }
 
   @GrpcMethod('EmailsService', 'SendLabReservationReminderEmail')
   async sendLabReservationReminderEmail(
     data: SendLabReservationReminderEmailDto,
   ): Promise<SendEmailResponseDto> {
-    return this.emailService.sendLabReservationReminderEmail(data);
+    return this.emailVdiService.sendLabReservationReminderEmail(data);
   }
 
   @GrpcMethod('EmailsService', 'SendPasswordRecoveryConfirmation')
   async sendPasswordRecoveryConfirmation(
     data: SendPasswordRecoveryConfirmationDto,
   ): Promise<SendEmailResponseDto> {
-    return this.emailService.sendPasswordRecoveryConfirmation(data);
+    return this.emailAccessService.sendPasswordRecoveryConfirmation(data);
   }
 
   @GrpcMethod('EmailsService', 'SendInitialPasswordConfirmation')
   async sendInitialPasswordConfirmation(
     data: SendInitialPasswordConfirmationDto,
   ): Promise<SendEmailResponseDto> {
-    return this.emailService.sendInitialPasswordConfirmation(data);
+    return this.emailAccessService.sendInitialPasswordConfirmation(data);
   }
 
   @GrpcMethod('EmailsService', 'SendPasswordChangeConfirmation')
   async sendPasswordChangeConfirmation(
     data: SendPasswordChangeConfirmationDto,
   ): Promise<SendEmailResponseDto> {
-    return this.emailService.sendPasswordChangeConfirmation(data);
+    return this.emailAccessService.sendPasswordChangeConfirmation(data);
   }
 
   @GrpcMethod('EmailsService', 'SendUserRegistrationEmail')
   async sendUserRegistrationEmail(
     data: SendUserRegistrationEmailDto,
   ): Promise<SendEmailResponseDto> {
-    return this.emailService.sendUserRegistrationEmail(data);
+    return this.emailAccessService.sendUserRegistrationEmail(data);
   }
 }

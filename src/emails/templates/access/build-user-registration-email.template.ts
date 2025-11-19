@@ -1,4 +1,4 @@
-import { Role, CodeService } from '../dto/send-user-registration-email.dto';
+import { Role, CodeService } from '../../dto/send-user-registration-email.dto';
 
 const getRoleDisplayName = (role: Role): string => {
   const roleMap: Record<Role, string> = {

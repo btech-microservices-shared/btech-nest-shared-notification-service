@@ -76,12 +76,12 @@ export class SendLabReservationReminderEmailDto {
   @IsNotEmpty({ message: 'El subscriptionDetailId es obligatorio' })
   subscriptionDetailId: string;
 
-  @IsUUID('all', { message: 'El ID de la reserva debe ser un UUID válido' })
-  @IsNotEmpty({ message: 'El ID de la reserva es obligatorio' })
-  reservationId: string;
-
   @IsOptional()
   @ValidateNested()
   @Type(() => GrpcMetadataDto)
   grpcMetadata?: GrpcMetadataDto;
+
+  @IsUUID('all', { message: 'El ID de la reserva debe ser un UUID válido' })
+  @IsNotEmpty({ message: 'El ID de la reserva es obligatorio' })
+  reservationId: string;
 }

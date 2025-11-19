@@ -220,7 +220,6 @@ export class EmailsService {
       dto.reservationId, // Necesita ser añadido al DTO
       'RESERVATION',
     );
-
     // Obtener la configuración del tenant para verificar si tiene logo personalizado
     const { config } = await this.emailProviderFactory.getProviderForTenant(
       dto.subscriptionDetailId,
@@ -299,7 +298,7 @@ export class EmailsService {
   ): Promise<SendEmailResponseDto> {
     // Asumimos que el DTO tiene un 'reservationId'
     const headers = await this.getHeadersForReply(
-      (dto as any).reservationId, // Necesita ser añadido al DTO
+      dto.reservationId, // Necesita ser añadido al DTO
       'RESERVATION',
     );
 

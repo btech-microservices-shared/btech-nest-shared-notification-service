@@ -30,6 +30,7 @@ message SendLabReservationEmailRequest {
   string primaryColor = 7;
   string subscriptionDetailId = 8;
   optional GrpcMetadata grpcMetadata = 9;
+  string reservationId = 10;
 }
 
 message ReservationDetail {
@@ -82,6 +83,7 @@ message SendLabEquipmentReservationCancellationEmailRequest {
   EmailNotificationMetadata metadata = 2;
   string subscriptionDetailId = 3;
   optional GrpcMetadata grpcMetadata = 4;
+  string reservationId = 5;
 }
 
 message EmailNotificationMetadata {
@@ -130,6 +132,7 @@ message SendLabReservationReminderEmailRequest {
   string subscriptionDetailId = 12;
   optional GrpcMetadata grpcMetadata = 13;
   string reservationLaboratoryEquipmentId = 14;
+  string reservationId = 15;
 }
 
 message SendPasswordRecoveryConfirmationRequest {

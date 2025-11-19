@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import {
@@ -42,7 +44,10 @@ export class DynamicSmtpProvider implements EmailProvider {
       const transporter = this.createTransporter(config);
       // Sobrescribir el remitente si el tenant tiene configuraci├│n personalizada
       const mailOptions = {
-        ...emailData,
+        to: emailData.to,
+        subject: emailData.subject,
+        html: emailData.html,
+        text: emailData.text,
         from:
           config.fromEmail && config.fromName
             ? `${config.fromName} <${config.fromEmail}>`

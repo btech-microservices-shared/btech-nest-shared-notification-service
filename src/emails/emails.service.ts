@@ -290,7 +290,7 @@ export class EmailsService {
     dto: SendLabReservationReminderEmailDto,
   ): Promise<SendEmailResponseDto> {
     // Asumimos que el DTO tiene un 'reservationId'
-     const headers = await this.getHeadersForReply(
+    const headers = await this.getHeadersForReply(
       (dto as any).reservationId, // Necesita ser añadido al DTO
       'RESERVATION',
     );

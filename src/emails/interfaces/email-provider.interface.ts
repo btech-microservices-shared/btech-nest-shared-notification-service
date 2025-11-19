@@ -4,7 +4,7 @@ export interface EmailProvider {
 
 export interface EmailHeaders {
   'In-Reply-To'?: string;
-  'References'?: string;
+  References?: string;
 }
 
 export interface EmailData {

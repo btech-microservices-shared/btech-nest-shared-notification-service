@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import {
@@ -30,8 +32,15 @@ export class Office365Provider implements EmailProvider {
   }
 
   async sendEmail(emailData: EmailData): Promise<EmailResult> {
+    const mailData = {
+      from: emailData.from,
+      to: emailData.to,
+      subject: emailData.subject,
+      html: emailData.html,
+      text: emailData.text,
+    };
     try {
-      const info = await this.transporter.sendMail(emailData);
+      const info = await this.transporter.sendMail(mailData);
       return {
         success: true,
         message: 'Email enviado exitosamente',

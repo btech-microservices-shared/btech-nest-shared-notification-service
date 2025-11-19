@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
+import { EmailHeaders } from '../interfaces/email-provider.interface';
 
 export class SendEmailDto {
   @IsString()
@@ -16,6 +17,10 @@ export class SendEmailDto {
   @IsString()
   @IsNotEmpty()
   html: string;
+
+  @IsOptional()
+  @IsObject()
+  headers?: EmailHeaders;
 }
 
 export interface SendEmailResponseDto {

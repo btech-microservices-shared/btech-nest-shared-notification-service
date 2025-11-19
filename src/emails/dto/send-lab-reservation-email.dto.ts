@@ -12,6 +12,10 @@ import { Type } from 'class-transformer';
 import { GrpcMetadataDto } from './grpc-metadata.dto';
 
 export class SendLabReservationEmailDto {
+  @IsUUID('all', { message: 'El ID de la reserva debe ser un UUID válido' })
+  @IsNotEmpty({ message: 'El ID de la reserva es obligatorio' })
+  reservationId: string;
+
   @IsEmail(
     {},
     { message: 'El correo electrónico debe tener un formato válido' },

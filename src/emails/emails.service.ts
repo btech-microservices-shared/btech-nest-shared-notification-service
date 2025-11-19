@@ -1,34 +1,97 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { SendEmailDto, SendEmailResponseDto } from './dto/send-email.dto';
-import { EmailProviderFactory } from './factories/email-provider.factory';
-import { buildLabReservationEmail } from './templates/build-lab-reservation-email.template';
-import { SendLabReservationEmailDto } from './dto/send-lab-reservation-email.dto';
+import { InjectRepository } from '@nestjs/typeorm';
 import { RpcException } from '@nestjs/microservices';
+import { Repository } from 'typeorm';
 import { envs } from 'src/config/env.config';
+import { EmailProviderFactory } from './factories/email-provider.factory';
 import { DynamicSmtpProvider } from './providers/dynamic-smtp.provider';
-import { SendCreatedTicketEmailDto } from './dto/send-created-ticket-email.dto';
+import { SentEmail } from './entities/sent-email.entity';
+import { buildLabReservationEmail } from './templates/build-lab-reservation-email.template';
 import { buildCreatedTicketEmail } from './templates/build-created-ticket-email.template';
-import { SendLabEquipmentReservationCancellationEmailDto } from './dto/send-lab-equipment-reservation-cancellation-email.dto';
 import { buildLabEquipmentReservationCancellationEmail } from './templates/build-lab-equipment-reservation-cancellation-email.template';
-import { SendPasswordRecoveryEmailDto } from './dto/send-password-recovery-email.dto';
 import { buildPasswordRecoveryEmail } from './templates/build-password-recovery-email.template';
-import { SendLabReservationReminderEmailDto } from './dto/send-lab-reservation-reminder-email.dto';
 import { buildLabReservationReminderEmail } from './templates/build-lab-reservation-reminder-email.template';
-import { SendPasswordRecoveryConfirmationDto } from './dto/send-password-recovery-confirmation.dto';
 import { buildPasswordRecoveryConfirmationEmail } from './templates/build-password-recovery-confirmation.template';
-import { SendInitialPasswordConfirmationDto } from './dto/send-initial-password-confirmation.dto';
 import { buildInitialPasswordConfirmationEmail } from './templates/build-initial-password-confirmation.template';
-import { SendPasswordChangeConfirmationDto } from './dto/send-password-change-confirmation.dto';
 import { buildPasswordChangeConfirmationEmail } from './templates/build-password-change-confirmation.template';
-import { SendUserRegistrationEmailDto } from './dto/send-user-registration-email.dto';
 import { buildUserRegistrationEmail } from './templates/build-user-registration-email.template';
+import { SendEmailDto, SendEmailResponseDto } from './dto/send-email.dto';
+import { SendLabReservationEmailDto } from './dto/send-lab-reservation-email.dto';
+import { SendCreatedTicketEmailDto } from './dto/send-created-ticket-email.dto';
+import { SendLabEquipmentReservationCancellationEmailDto } from './dto/send-lab-equipment-reservation-cancellation-email.dto';
+import { SendPasswordRecoveryEmailDto } from './dto/send-password-recovery-email.dto';
+import { SendLabReservationReminderEmailDto } from './dto/send-lab-reservation-reminder-email.dto';
+import { SendPasswordRecoveryConfirmationDto } from './dto/send-password-recovery-confirmation.dto';
+import { SendInitialPasswordConfirmationDto } from './dto/send-initial-password-confirmation.dto';
+import { SendPasswordChangeConfirmationDto } from './dto/send-password-change-confirmation.dto';
+import { SendUserRegistrationEmailDto } from './dto/send-user-registration-email.dto';
+import { EmailHeaders } from './interfaces/email-provider.interface';
 
 @Injectable()
 export class EmailsService {
   private readonly logger = new Logger(EmailsService.name);
-  constructor(private readonly emailProviderFactory: EmailProviderFactory) {}
+
+  constructor(
+    private readonly emailProviderFactory: EmailProviderFactory,
+    @InjectRepository(SentEmail)
+    private readonly sentEmailRepository: Repository<SentEmail>,
+  ) {}
+
+  private async saveSentEmail(
+    messageId: string,
+    referenceId: string,
+    referenceType: string,
+  ): Promise<void> {
+    try {
+      const sentEmail = this.sentEmailRepository.create({
+        messageId,
+        referenceId,
+        referenceType,
+      });
+      await this.sentEmailRepository.save(sentEmail);
+      this.logger.log(
+        `Email messageId ${messageId} saved for ${referenceType} ${referenceId}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to save email messageId for ${referenceType} ${referenceId}`,
+        error.stack,
+      );
+    }
+  }
+
+  private async getHeadersForReply(
+    referenceId: string,
+    referenceType: string,
+  ): Promise<EmailHeaders | undefined> {
+    try {
+      const sentEmail = await this.sentEmailRepository.findOne({
+        where: { referenceId, referenceType },
+        order: { createdAt: 'ASC' },
+      });
+
+      if (sentEmail) {
+        this.logger.log(
+          `Found original email for ${referenceType} ${referenceId}. Message-ID: ${sentEmail.messageId}`,
+        );
+        return {
+          'In-Reply-To': sentEmail.messageId,
+          References: sentEmail.messageId,
+        };
+      }
+      this.logger.warn(
+        `No original email found for ${referenceType} ${referenceId}. Sending as new email.`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Error fetching headers for ${referenceType} ${referenceId}`,
+        error.stack,
+      );
+    }
+    return undefined;
+  }
 
   async sendEmail(
     sendEmailDto: SendEmailDto,
@@ -103,10 +166,21 @@ export class EmailsService {
       subject: 'Confirmación de Reserva',
       html,
     };
-    return this.sendEmail(
+    const result = await this.sendEmail(
       emailData,
       sendLabReservationEmailDto.subscriptionDetailId,
     );
+
+    if (result.success && result.messageId) {
+      // Asumimos que el DTO tiene un 'reservationId'
+      await this.saveSentEmail(
+        result.messageId,
+        (sendLabReservationEmailDto as any).reservationId, // Necesita ser añadido al DTO
+        'RESERVATION',
+      );
+    }
+
+    return result;
   }
 
   async sendCreatedTicketEmail(
@@ -121,15 +195,32 @@ export class EmailsService {
       subject,
       html,
     };
-    return this.sendEmail(
+
+    const result = await this.sendEmail(
       emailData,
       sendCreatedTicketEmailDto.subscriptionDetailId,
     );
+
+    if (result.success && result.messageId) {
+      await this.saveSentEmail(
+        result.messageId,
+        sendCreatedTicketEmailDto.ticketNumber,
+        'TICKET',
+      );
+    }
+
+    return result;
   }
 
   async sendLabEquipmentReservationCancellationEmail(
     dto: SendLabEquipmentReservationCancellationEmailDto,
   ): Promise<SendEmailResponseDto> {
+    // Asumimos que el DTO tiene un 'reservationId'
+    const headers = await this.getHeadersForReply(
+      (dto as any).reservationId, // Necesita ser añadido al DTO
+      'RESERVATION',
+    );
+
     // Obtener la configuración del tenant para verificar si tiene logo personalizado
     const { config } = await this.emailProviderFactory.getProviderForTenant(
       dto.subscriptionDetailId,
@@ -159,6 +250,7 @@ export class EmailsService {
       to: dto.metadata.emailNotificationData.subscriberEmail,
       subject: 'Cancelación de Reserva de Equipo de Laboratorio',
       html,
+      headers, // Añadimos las cabeceras aquí
     };
     return this.sendEmail(emailData, dto.subscriptionDetailId);
   }
@@ -197,6 +289,12 @@ export class EmailsService {
   async sendLabReservationReminderEmail(
     dto: SendLabReservationReminderEmailDto,
   ): Promise<SendEmailResponseDto> {
+    // Asumimos que el DTO tiene un 'reservationId'
+     const headers = await this.getHeadersForReply(
+      (dto as any).reservationId, // Necesita ser añadido al DTO
+      'RESERVATION',
+    );
+
     const { config } = await this.emailProviderFactory.getProviderForTenant(
       dto.subscriptionDetailId,
     );
@@ -220,6 +318,7 @@ export class EmailsService {
       to: dto.to,
       subject: `Recordatorio: Tu reserva comienza pronto`,
       html,
+      headers, // Añadimos las cabeceras aquí
     };
     return this.sendEmail(emailData, dto.subscriptionDetailId);
   }

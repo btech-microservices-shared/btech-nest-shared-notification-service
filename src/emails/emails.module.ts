@@ -7,9 +7,10 @@ import { Office365Provider } from './providers/office365.provider';
 import { DynamicSmtpProvider } from './providers/dynamic-smtp.provider';
 import { EmailServerConfigService } from './services/email-server-config.service';
 import { EmailServerConfig } from './entities/email-server-config.entity';
+import { SentEmail } from './entities/sent-email.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([EmailServerConfig])],
+  imports: [TypeOrmModule.forFeature([EmailServerConfig, SentEmail])],
   controllers: [EmailsController],
   providers: [
     EmailsService,

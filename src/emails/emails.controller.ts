@@ -2,6 +2,7 @@ import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { SendLabReservationEmailDto } from './dto/send-lab-reservation-email.dto';
 import { SendCreatedTicketEmailDto } from './dto/send-created-ticket-email.dto';
+import { SendTicketCommentEmailDto } from './dto/send-ticket-comment-email.dto';
 import { SendEmailResponseDto } from './dto/send-email.dto';
 import { SendLabEquipmentReservationCancellationEmailDto } from './dto/send-lab-equipment-reservation-cancellation-email.dto';
 import { SendPasswordRecoveryEmailDto } from './dto/send-password-recovery-email.dto';
@@ -33,6 +34,13 @@ export class EmailsController {
     data: SendCreatedTicketEmailDto,
   ): Promise<SendEmailResponseDto> {
     return this.emailSupportService.sendCreatedTicketEmail(data);
+  }
+
+  @GrpcMethod('EmailsService', 'SendTicketCommentEmail')
+  async sendTicketCommentEmail(
+    data: SendTicketCommentEmailDto,
+  ): Promise<SendEmailResponseDto> {
+    return this.emailSupportService.sendTicketCommentEmail(data);
   }
 
   @GrpcMethod('EmailsService', 'SendLabEquipmentReservationCancellationEmail')

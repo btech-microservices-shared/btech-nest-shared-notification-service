@@ -107,11 +107,17 @@ export const buildCreatedTicketEmail = (params: {
   };
 
   return `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff;">
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+    </head>
+    <body style="margin: 0; padding: 0;">
+    <div style="font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff;">
       <!-- Encabezado -->
       <div style="text-align: center; margin-bottom: 30px; padding: 20px; background: linear-gradient(135deg, ${params.primaryColor} 0%, ${params.primaryColor}dd 100%);">
         <img src="${params.logoUrl}" alt="${params.companyName}" style="max-width: 200px; margin-bottom: 10px;">
-        <h1 style="color: white; margin: 0; font-size: 24px;">Nuevo Ticket de Soporte Creado</h1>
+        <h1 style="color: white; margin: 0; font-size: 24px;">Nuevo Ticket de Soporte</h1>
       </div>
 
       <div style="padding: 0 20px;">
@@ -128,7 +134,7 @@ export const buildCreatedTicketEmail = (params: {
           margin-bottom: 20px;
         ">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h2 style="margin: 0; color: ${params.primaryColor}; font-size: 20px;">Ticket #${params.ticketNumber}</h2>
+            <h2 style="margin: 0; color: ${params.primaryColor}; font-size: 20px;">Ticket ${params.ticketNumber}</h2>
             <div style="display: flex; gap: 10px;">
               <span style="
                 background: ${getPriorityColor(params.priority)};
@@ -231,5 +237,7 @@ export const buildCreatedTicketEmail = (params: {
         </div>
       </div>
     </div>
+    </body>
+    </html>
   `;
 };

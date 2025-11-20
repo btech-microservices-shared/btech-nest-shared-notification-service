@@ -5,6 +5,7 @@ package emails;
 service EmailsService {
   rpc SendLabReservationEmail(SendLabReservationEmailRequest) returns (SendEmailResponse);
   rpc SendCreatedTicketEmail(SendCreatedTicketEmailRequest) returns (SendEmailResponse);
+  rpc SendTicketCommentEmail(SendTicketCommentEmailRequest) returns (SendEmailResponse);
   rpc SendLabEquipmentReservationCancellationEmail(SendLabEquipmentReservationCancellationEmailRequest) returns (SendEmailResponse);
   rpc SendPasswordRecoveryEmail(SendPasswordRecoveryEmailRequest) returns (SendEmailResponse);
   rpc SendLabReservationReminderEmail(SendLabReservationReminderEmailRequest) returns (SendEmailResponse);
@@ -76,6 +77,23 @@ message SendCreatedTicketEmailRequest {
   repeated string ccEmails = 18;
   optional string productName = 19;
   optional string serialNumber = 20;
+}
+
+message SendTicketCommentEmailRequest {
+  string to = 1;
+  string companyName = 2;
+  string logoUrl = 3;
+  string userName = 4;
+  string ticketNumber = 5;
+  string ticketTitle = 6;
+  string commentAuthor = 7;
+  string commentContent = 8;
+  string commentDate = 9;
+  string primaryColor = 10;
+  string ticketUrl = 11;
+  string subscriptionDetailId = 12;
+  optional GrpcMetadata grpcMetadata = 13;
+  optional string ticketStatus = 14;
 }
 
 message SendLabEquipmentReservationCancellationEmailRequest {

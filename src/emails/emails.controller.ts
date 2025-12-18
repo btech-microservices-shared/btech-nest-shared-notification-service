@@ -11,6 +11,7 @@ import { SendPasswordRecoveryConfirmationDto } from './dto/send-password-recover
 import { SendInitialPasswordConfirmationDto } from './dto/send-initial-password-confirmation.dto';
 import { SendPasswordChangeConfirmationDto } from './dto/send-password-change-confirmation.dto';
 import { SendUserRegistrationEmailDto } from './dto/send-user-registration-email.dto';
+import { SendUserUpdateEmailDto } from './dto/send-user-update-email.dto';
 import { EmailVdiService } from './services/email-vdi.service';
 import { EmailAccessService, EmailSupportService } from './services';
 
@@ -93,5 +94,12 @@ export class EmailsController {
     data: SendUserRegistrationEmailDto,
   ): Promise<SendEmailResponseDto> {
     return this.emailAccessService.sendUserRegistrationEmail(data);
+  }
+
+  @GrpcMethod('EmailsService', 'SendUserUpdateEmail')
+  async sendUserUpdateEmail(
+    data: SendUserUpdateEmailDto,
+  ): Promise<SendEmailResponseDto> {
+    return this.emailAccessService.sendUserUpdateEmail(data);
   }
 }

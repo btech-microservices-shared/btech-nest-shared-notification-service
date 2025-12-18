@@ -13,6 +13,7 @@ service EmailsService {
   rpc SendInitialPasswordConfirmation(SendInitialPasswordConfirmationRequest) returns (SendEmailResponse);
   rpc SendPasswordChangeConfirmation(SendPasswordChangeConfirmationRequest) returns (SendEmailResponse);
   rpc SendUserRegistrationEmail(SendUserRegistrationEmailRequest) returns (SendEmailResponse);
+  rpc SendUserUpdateEmail(SendUserUpdateEmailRequest) returns (SendEmailResponse);
 }
 
 message GrpcMetadata {
@@ -198,4 +199,17 @@ message SendUserRegistrationEmailRequest {
   string logoUrl = 9;
   optional string subscriptionDetailId = 10;
   optional GrpcMetadata grpcMetadata = 11;
+}
+
+message SendUserUpdateEmailRequest {
+  string email = 1;
+  string username = 2;
+  string fullName = 3;
+  string password = 4;
+  string codeService = 5;
+  string companyName = 6;
+  string primaryColor = 7;
+  string logoUrl = 8;
+  optional string subscriptionDetailId = 9;
+  optional GrpcMetadata grpcMetadata = 10;
 }

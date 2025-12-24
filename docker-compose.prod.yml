@@ -1,0 +1,17 @@
+services:
+  shared-notification-service:
+    build: .
+    container_name: shared-notification-service
+    volumes:
+      - ./src:/usr/src/app/src
+    command: pnpm start:dev
+    env_file:
+      - .env.production
+    ports:
+      - "3200:3200"  # Puerto HTTP
+      - "50057:50057"  # Puerto gRPC
+    restart: unless-stopped
+
+networks:
+  default:
+    driver: bridge
